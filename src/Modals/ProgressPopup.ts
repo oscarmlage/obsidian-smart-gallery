@@ -41,15 +41,10 @@ export class ProgressModal extends Modal
 	{
 		const { contentEl } = this;
 
-		const bar = contentEl.createDiv();
-		bar.style.height = "25px"
-		bar.style.width = "100%"
-		bar.style.backgroundColor = "#333"
+		const bar = contentEl.createDiv({cls: "progress-popup-bar"});
 
-		this.#progressEl = bar.createDiv();
-		this.#progressEl.style.height = "100%"
-		this.#progressEl.style.width = "0%"
-		this.#progressEl.style.backgroundColor = this.#plugin.accentColor
+		this.#progressEl = bar.createDiv({cls: "progress-popup-fill"});
+		this.#progressEl.style.backgroundColor = this.#plugin.accentColor;
 
 		if(this.#onCancel)
 		{

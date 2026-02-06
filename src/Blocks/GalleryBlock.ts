@@ -56,8 +56,8 @@ export class GalleryBlock
           const value = param[1]?.trim();
           if (key === 'imgWidth' || key === 'imgHeight' || key === 'divWidth' || key === 'divHeight' || key === 'random') {
             args[key] = parseInt(value) || -1;
-          } else {
-            (args[key] as string) = value;
+          } else if (key === 'type' || key === 'filter' || key === 'exclusive' || key === 'matchCase' || key === 'divAlign' || key === 'sort' || key === 'reverseOrder' || key === 'customList') {
+            args[key] = value;
           }
         }
         else
@@ -130,10 +130,10 @@ export class GalleryBlock
     if (args.type === 'grid')
     {
       const mediaGrid = new MediaGrid(elCanvas, mediaSearch, plugin);
-      mediaGrid.updateDisplay();
+      void mediaGrid.updateDisplay();
       plugin.onResize = () =>
       {
-        mediaGrid.updateDisplay();
+        void mediaGrid.updateDisplay();
       }
       
       mediaGrid.setupClickEvents();

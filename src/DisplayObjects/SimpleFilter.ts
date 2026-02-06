@@ -37,12 +37,14 @@ export class SimpleFilter implements IFilter
 			attr: { 'aria-label': loc('FILTER_TAGS_TOOLTIP'), spellcheck: false, placeholder: loc('FILTER_TAGS_PROMPT') }
 		  })
 	  
-		  this.#tagFilterEl.addEventListener('input', async () =>
-		  {
+	  this.#tagFilterEl.addEventListener('input', () =>
+	  {
+		void (async () => {
 			this.#mediaSearch.tag = this.#tagFilterEl.value.trim();
 			await this.updateData();
-			this.updateDisplay();
-		  });
+			void this.updateDisplay();
+		})();
+	  });
 		  
 		// Filter Exclusive or inclusive
 		this.#exclusiveFilterDiv = filterTopDiv.createDiv({
@@ -51,8 +53,9 @@ export class SimpleFilter implements IFilter
 		  })
 		  setIcon(this.#exclusiveFilterDiv, "check-check")
 	  
-		  this.#exclusiveFilterDiv.addEventListener('mousedown', async () =>
-		  {
+	  this.#exclusiveFilterDiv.addEventListener('mousedown', () =>
+	  {
+		void (async () => {
 			this.#mediaSearch.exclusive = !this.#mediaSearch.exclusive;
 			if(this.#mediaSearch.exclusive)
 			{
@@ -63,8 +66,9 @@ export class SimpleFilter implements IFilter
 			  this.#exclusiveFilterDiv.removeClass("icon-checked");
 			}
 			await this.updateData();
-			this.updateDisplay();
-		  });
+			void this.updateDisplay();
+		})();
+	  });
 	
 		// Sort menu
 		this.#sortReverseDiv = filterTopDiv.createEl('a', {
@@ -89,14 +93,14 @@ export class SimpleFilter implements IFilter
 		this.#widthScaleEl.min = MIN_IMAGE_WIDTH+"";
 		this.#widthScaleEl.max = (this.#mediaGrid.areaWidth())+"";
 		this.#widthScaleEl.value = this.#mediaSearch.maxWidth+"";
-		this.#widthScaleEl.addEventListener('input', async () =>
-		{
-		  this.#mediaSearch.maxWidth = parseInt(this.#widthScaleEl.value);
-		  if(this.#mediaGrid.haveColumnsChanged())
-		  {
-			this.updateDisplay();
-		  }
-		});
+	this.#widthScaleEl.addEventListener('input', () =>
+	{
+	  this.#mediaSearch.maxWidth = parseInt(this.#widthScaleEl.value);
+	  if(this.#mediaGrid.haveColumnsChanged())
+	  {
+		void this.updateDisplay();
+	  }
+	});
 	}
 
 	

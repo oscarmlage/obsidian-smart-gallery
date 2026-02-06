@@ -1,6 +1,8 @@
 import { prepareFuzzySearch } from "obsidian";
 import { offScreenPartial } from "../utils";
 
+declare function createDiv(options?: { cls?: string; text?: string }): HTMLDivElement;
+
 export class SuggestionDropdown
 {
 	target: HTMLInputElement
@@ -24,20 +26,20 @@ export class SuggestionDropdown
 		this.onSubmit = onSubmit;
 
 		this.#self = createDiv({cls: "suggestion-container"})
-		this.#suggestions = this.#self.createDiv("#suggestions-scroll");
-		this.#suggestions.style.maxHeight = 300+"px";
-		this.#suggestions.style.overflowY = "auto";
+		this.#suggestions = this.#self.createDiv({cls: "suggestions-scroll"});
 		
-		this.target.addEventListener("input", async() =>{
-			await this.#updateSuggestions(this.target.value)
-			this.#show();
+		this.target.addEventListener("input", () =>{
+			void this.#updateSuggestions(this.target.value).then(() => {
+				void this.#show();
+			});
 		});
 		
-		this.target.addEventListener('click', async () =>{
+		this.target.addEventListener('click', () =>{
 			if(this.showOnClick)
 			{
-				await this.#updateSuggestions(this.target.value)
-				this.#show();
+				void this.#updateSuggestions(this.target.value).then(() => {
+					void this.#show();
+				});
 			}
 		});
 
@@ -158,7 +160,7 @@ export class SuggestionDropdown
 		}
 
 		this.#suggestions.empty();
-		const items = await this.onGetItems();
+		const items = this.onGetItems();
 		if(items.length == 0)
 		{
 			return;
@@ -224,17 +226,15 @@ export class SuggestionDropdown
 	{
 		let top, left;
 		[top, left] = this.getCoords();
-		activeDocument.body.appendChild(this.#self);
-		this.#self.style.left = left+"px";
-		this.#self.style.top = top+"px";
+		document.body.appendChild(this.#self);
+		this.#self.setCssStyles({ left: left + "px", top: top + "px" });
 		this.#showing = true;
 
 		if(this.#leftLocked || offScreenPartial(this.#self))
 		{
 			this.#leftLocked = true
 			const box = this.#self.getBoundingClientRect();
-			this.#self.style.left = (left-box.width)+"px";
-			this.#self.style.top = (top-box.height)+"px";
+			this.#self.setCssStyles({ left: (left - box.width) + "px", top: (top - box.height) + "px" });
 		}
 	}
 

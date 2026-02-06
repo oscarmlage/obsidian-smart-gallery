@@ -20,7 +20,7 @@ export class SortingMenu extends MenuPopup
 
 	constructor(posX:number, posY:number, mediaSearch: MediaSearch, mediaGrid: MediaGrid)
 	{
-		super(posX, posY, (result) => {this.#submit(result)});
+		super(posX, posY, (result) => {void this.#submit(result)});
 
 		this.#mediaSearch = mediaSearch;
 		this.#mediaGrid = mediaGrid;
@@ -55,12 +55,12 @@ export class SortingMenu extends MenuPopup
 			case SortOptions.FLIP: sorting = Sorting.UNSORTED; break;
 		}
 		
-		let color: string = null;
-		if(sorting == this.#mediaSearch.sorting)
+		let color: string | null = null;
+		if(sorting === this.#mediaSearch.sorting)
 		{
 			color = this.#mediaSearch.plugin.accentColor;
 		}
-		if(option == SortOptions.FLIP)
+		if(option === SortOptions.FLIP)
 		{
 			color = this.#mediaSearch.reverse ? this.#mediaSearch.plugin.accentColor : null;
 		}

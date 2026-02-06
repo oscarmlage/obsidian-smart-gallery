@@ -61,13 +61,12 @@ export class SuggestionPopup extends Modal
 			});
 		});
 
-		const input = setting.descEl.createEl("input", {cls: "new-tag-input"})
+		const input = setting.descEl.createEl("input", {cls: "new-tag-input suggestion-popup-input"})
 		input.value = this.#original;
-		input.style.width = "100%";
 		
 		new SuggestionDropdown(input, 
 			this.onGetItems,
-			async(s) =>{
+			(s) =>{
 				this.close();
 				if(this.onConfirm)
 				{

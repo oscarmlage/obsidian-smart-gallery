@@ -26,12 +26,12 @@ export class FilterMenu extends MenuPopup
 
 	constructor(posX:number, posY:number, filterView: IFilter, mediaSearch: MediaSearch, plugin: GalleryTagsPlugin)
 	{
-		super(posX, posY, (result) => {this.#submit(result)});
+		super(posX, posY, (result) => {void this.#submit(result)});
 
 		this.#filterView = filterView;
 		this.#mediaSearch = mediaSearch;
 		this.#plugin = plugin;
-		
+
 		this.AddLabel(loc('FILTER_HEADER'));
 		this.addSeparator();
 
@@ -44,16 +44,16 @@ export class FilterMenu extends MenuPopup
 		this.addSeparator();
 
 		this.#userList = this.#plugin.settings.namedFilters.map(x => { return x.name;});
-	
-		for (let i = 0; i < this.#userList.length; i++) 
-		{			
+
+		for (let i = 0; i < this.#userList.length; i++)
+		{
 			this.#createItem(FilterOptions.USER+i);
 		}
 
 		this.show(posX,posY);
 	}
 
-	#createItem(option:number)
+	#createItem(option:FilterOptions)
 	{
 		let label: string;
 		if(option < FilterOptions.USER)
@@ -72,7 +72,7 @@ export class FilterMenu extends MenuPopup
 
 	async #submit(result:string)
 	{
-		const index = parseInt(result);
+		const index = parseInt(result) as FilterOptions;
 		switch(index)
 		{
 			case FilterOptions.COPY : await navigator.clipboard.writeText(this.#mediaSearch.getFilter()); break;
@@ -96,9 +96,9 @@ export class FilterMenu extends MenuPopup
 	{
 		const filterString = await navigator.clipboard.readText();
 		this.#mediaSearch.setFilter(filterString);
-  
+
 		this.#filterView.filterFill();
-  
+
 		await this.#filterView.updateData();
 		await this.#filterView.updateDisplay();
 	}
@@ -106,9 +106,9 @@ export class FilterMenu extends MenuPopup
 	async #resultClear()
 	{
 		this.#mediaSearch.clearFilter();
-  
+
 		this.#filterView.filterFill();
-  
+
 		await this.#filterView.updateData();
 		await this.#filterView.updateDisplay();
 	}
@@ -116,9 +116,9 @@ export class FilterMenu extends MenuPopup
 	async #resultUser(index: number)
 	{
 		this.#mediaSearch.setIndexedFilter(index);
-  
+
 		this.#filterView.filterFill();
-  
+
 		await this.#filterView.updateData();
 		await this.#filterView.updateDisplay();
 	}
@@ -131,29 +131,31 @@ export class FilterMenu extends MenuPopup
 		}
 
 		new SuggestionPopup(
-			this.#plugin.app, 
-			loc('FILTER_NEW_INFO'), 
+			this.#plugin.app,
+			loc('FILTER_NEW_INFO'),
 			"",
 			() => { return this.#userList;},
-			async (name) => 
+			(name) =>
 			{
-				name = name.trim();
-				if(!validString(name))
-				{
-					return;
-				}
+				void (async () => {
+					name = name.trim();
+					if(!validString(name))
+					{
+						return;
+					}
 
-				if(this.#userList.contains(name))
-				{
-					this.#plugin.settings.namedFilters[this.#userList.indexOf(name)].filter = filter;
-				}
-				else
-				{
-					const newFilter: NamedFilter = {name: name, filter: filter};
-					this.#plugin.settings.namedFilters.push(newFilter);
-				}
+					if(this.#userList.contains(name))
+					{
+						this.#plugin.settings.namedFilters[this.#userList.indexOf(name)].filter = filter;
+					}
+					else
+					{
+						const newFilter: NamedFilter = {name: name, filter: filter};
+						this.#plugin.settings.namedFilters.push(newFilter);
+					}
 
-				await this.#plugin.saveSettings();
+					await this.#plugin.saveSettings();
+				})();
 			}).open();
 	}
 }

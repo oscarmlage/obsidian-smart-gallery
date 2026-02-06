@@ -54,7 +54,7 @@ export class GalleryInfo
 		{
 			current = block.createDiv({ cls: 'gallery-info-section' });
 			current.createSpan({ cls: 'gallery-info-section-label' }).textContent = loc('IMAGE_INFO_FIELD_PATH');
-			const imgLink = current.createDiv({ cls: 'gallery-info-section-value' }).createEl("a", { cls: 'internal-link' }); 
+			const imgLink = current.createDiv({ cls: 'gallery-info-section-value' }).createEl("a", { cls: 'internal-link' });
 			imgLink.dataset.href = this.imgPath;
 			imgLink.textContent = this.imgPath;
 		}
@@ -99,101 +99,111 @@ export class GalleryInfo
 			current = block.createDiv({ cls: 'gallery-info-section' });
 			current.createSpan({ cls: 'gallery-info-section-label' }).textContent = loc('IMAGE_INFO_FIELD_IMAGE_TAGS');
 			currentVal = current.createDiv({ cls: 'gallery-info-section-value' });
-			
+
 			if(this.tagList != null)
 			{
 				for(let i = 0; i < this.tagList.length; i++)
 				{
-					const pill = currentVal.createDiv("gallery-info-section-pill");	
-					pill.style.backgroundColor = this.plugin.accentColorDark+"44";
+					const pill = currentVal.createDiv("gallery-info-section-pill");
+					pill.setCssStyles({ backgroundColor: this.plugin.accentColorDark+"44" });
 					const currentTag = pill.createSpan("multi-select-pill-content")
 					currentTag.textContent = this.tagList[i];
-					currentTag.addEventListener('click', 
-					async (s) =>{
+					currentTag.addEventListener('click',
+					() =>{
 						getSearch("tag:"+this.tagList[i].replace("#",""), this.plugin.app)
 					});
 					const removal = pill.createDiv("multi-select-pill-remove-button")
 					setIcon(removal, 'x')
-					removal.addEventListener('click', 
-					async (s) =>{
-						await removeTag(this.imgInfo,this.tagList[i],this.plugin);
-						this.tagList.remove(this.tagList[i])
-						this.updateDisplay();
+					removal.addEventListener('click',
+					() =>{
+						void (async () => {
+							await removeTag(this.imgInfo,this.tagList[i],this.plugin);
+							this.tagList.remove(this.tagList[i])
+							this.updateDisplay();
+						})();
 					});
 				}
 			}
 			const newTagEl = currentVal.createEl("input", {cls: "new-tag-input"});
 			newTagEl.name = "new-tag";
 			newTagEl.placeholder = loc('IMAGE_INFO_FIELD_NEW_TAG');
-			const suggetions = new SuggestionDropdown(newTagEl, 
-				() =>{return this.plugin.getTags();},
-				async(s) =>{
+		const suggetions = new SuggestionDropdown(newTagEl,
+			() =>{return this.plugin.getTags();},
+			(s) =>{
+				void (async () => {
 					const tag = s.trim();
 					if(!validString(tag))
 					{
 						return;
 					}
 					await addTag(this.imgInfo, tag, this.plugin);
-					
+
 					this.tagList.push(tag)
 					this.updateDisplay();
 
-					(document.querySelector("input[name='new-tag']") as HTMLInputElement).focus();
-				});
-			suggetions.ignoreList = this.tagList;
+					const newTagInput = document.querySelector("input[name='new-tag']");
+					if (newTagInput instanceof HTMLInputElement) newTagInput.focus();
+				})();
+			});
+		suggetions.ignoreList = this.tagList;
 		}
 
 		const propertyList = Object.keys(this.autoCompleteList);
-		for (let index = 0; index < propertyList.length; index++) 
+		for (let index = 0; index < propertyList.length; index++)
 		{
 			const field = propertyList[index];
 			const items = this.autoCompleteList[field];
-			
+
 			current = block.createDiv({ cls: 'gallery-info-section' });
 			current.createSpan({ cls: 'gallery-info-section-label' }).textContent = field;
 			currentVal = current.createDiv({ cls: 'gallery-info-section-value' });
-			
+
 			if(items != null)
 			{
 				for(let i = 0; i < items.length; i++)
 				{
-					const pill = currentVal.createDiv("gallery-info-section-pill");	
-					pill.style.backgroundColor = this.plugin.accentColorDark+"44";
+					const pill = currentVal.createDiv("gallery-info-section-pill");
+					pill.setCssStyles({ backgroundColor: this.plugin.accentColorDark+"44" });
 					const currentTag = pill.createSpan("multi-select-pill-content")
 					currentTag.textContent = items[i];
-					currentTag.addEventListener('click', 
-					async (s) =>{
+					currentTag.addEventListener('click',
+					() =>{
 						getSearch("["+field+":"+items[i].replace("#","")+"]", this.plugin.app)
 					});
 					const removal = pill.createDiv("multi-select-pill-remove-button")
 					setIcon(removal, 'x')
-					removal.addEventListener('click', 
-					async (s) =>{
-						await removeTag(this.imgInfo,items[i],this.plugin, field);
-						items.remove(items[i])
-						this.updateDisplay();
+					removal.addEventListener('click',
+					() =>{
+						void (async () => {
+							await removeTag(this.imgInfo,items[i],this.plugin, field);
+							items.remove(items[i])
+							this.updateDisplay();
+						})();
 					});
 				}
 			}
 			const newTagEl = currentVal.createEl("input", {cls: "new-tag-input"});
 			newTagEl.name = "new-tag";
 			newTagEl.placeholder = loc('IMAGE_INFO_FIELD_NEW_TAG');
-			const suggetions = new SuggestionDropdown(newTagEl, 
-				() =>{return this.plugin.getFieldTags(field);},
-				async(s) =>{
+		const suggetions = new SuggestionDropdown(newTagEl,
+			() =>{return this.plugin.getFieldTags(field);},
+			(s) =>{
+				void (async () => {
 					const tag = s.trim();
 					if(!validString(tag))
 					{
 						return;
 					}
 					await addTag(this.imgInfo, tag, this.plugin, field);
-					
+
 					items.push(tag)
 					this.updateDisplay();
 
-					(document.querySelector("input[name='new-tag']") as HTMLInputElement).focus();
-				});
-			suggetions.ignoreList = items;
+					const newTagInput = document.querySelector("input[name='new-tag']");
+					if (newTagInput instanceof HTMLInputElement) newTagInput.focus();
+				})();
+			});
+		suggetions.ignoreList = items;
 		}
 
 		if(!this.infoList.contains("backlinks"))
@@ -209,7 +219,7 @@ export class GalleryInfo
 					link.dataset.href = this.imgLinks[i].path;
 					link.textContent = this.imgLinks[i].name;
 				}
-			}	
+			}
 		}
 
 		if(this.infoLinks.length > 0 && !this.infoList.contains("infolinks"))
@@ -225,7 +235,7 @@ export class GalleryInfo
 					link.dataset.href = this.infoLinks[i].path;
 					link.textContent = this.infoLinks[i].name;
 				}
-			}	
+			}
 		}
 
 		if(this.relatedFiles.length > 0 && !this.infoList.contains("relatedfiles"))
@@ -241,7 +251,7 @@ export class GalleryInfo
 					link.dataset.href = this.relatedFiles[i].path;
 					link.textContent = this.relatedFiles[i].name;
 				}
-			}	
+			}
 		}
 
 		if(!this.infoList.contains("colorpalette") && this.colorList.length > 0)
@@ -249,14 +259,14 @@ export class GalleryInfo
 			current = block.createDiv({ cls: 'gallery-info-section' });
 			current.createSpan({ cls: 'gallery-info-section-label' }).textContent = loc('IMAGE_INFO_FIELD_PALETTE');
 			currentVal = current.createDiv({ cls: 'gallery-info-section-value' })
-			
+
 			if(this.colorList != null)
 			{
 				for(let i = 0; i < this.colorList.length; i++)
 				{
 					const currentColor = currentVal.createDiv({ cls: 'gallery-info-color' })
 					currentColor.ariaLabel = this.colorList[i];
-					currentColor.style.backgroundColor = this.colorList[i];
+					currentColor.setCssStyles({ backgroundColor: this.colorList[i] });
 				}
 			}
 		}
@@ -265,13 +275,22 @@ export class GalleryInfo
 		{
 			if(!this.infoList.contains(yaml.toLocaleLowerCase()) && yaml !="position")
 			{
+				const value = (this.frontmatter as Record<string, unknown>)[yaml];
+				let displayValue: string;
+				if (value === null || value === undefined) {
+					displayValue = '';
+				} else if (typeof value === 'object') {
+					displayValue = JSON.stringify(value);
+				} else {
+					displayValue = String(value as string | number | boolean);
+				}
 				current = block.createDiv({ cls: 'gallery-info-section' });
 				current.createSpan({ cls: 'gallery-info-section-label' }).textContent = yaml;
-				current.createDiv({ cls: 'gallery-info-section-value' }).textContent = this.frontmatter[yaml];
+				current.createDiv({ cls: 'gallery-info-section-value' }).textContent = displayValue;
 			}
 		}
 
-		if(!this.infoList.contains("paging") 
+		if(!this.infoList.contains("paging")
 			&& (validString(this.start)
 			|| validString(this.prev)
 			|| validString(this.next)))
@@ -285,9 +304,7 @@ export class GalleryInfo
 				{
 					this.prev +=".md";
 				}
-				const link = currentVal.createEl("a", { cls: 'internal-link' });
-				link.style.paddingLeft = "5px";
-				link.style.paddingRight = "5px";
+				const link = currentVal.createEl("a", { cls: 'internal-link gallery-info-paging-link' });
 				link.dataset.href = this.prev;
 				link.textContent = loc('IMAGE_INFO_PAGING_PREV');
 			}
@@ -298,28 +315,24 @@ export class GalleryInfo
 				{
 					this.start +=".md";
 				}
-				const link = currentVal.createEl("a", { cls: 'internal-link' });
-				link.style.paddingLeft = "5px";
-				link.style.paddingRight = "5px";
+				const link = currentVal.createEl("a", { cls: 'internal-link gallery-info-paging-link' });
 				link.dataset.href = this.start;
 				link.textContent = loc('IMAGE_INFO_PAGING_START');
 			}
-			
+
 			if(this.next)
 			{
 				if(!this.next.match(hasExtension))
 				{
 					this.next +=".md";
 				}
-				const link = currentVal.createEl("a", { cls: 'internal-link' });
-				link.style.paddingLeft = "5px";
-				link.style.paddingRight = "5px";
+				const link = currentVal.createEl("a", { cls: 'internal-link gallery-info-paging-link' });
 				link.dataset.href = this.next;
 				link.textContent = loc('IMAGE_INFO_PAGING_NEXT');
 			}
 		}
 
-		this.#updateLinks();
+		void this.#updateLinks();
 	}
 
 	// Side panel links don't work normally, so this on click helps with that
@@ -327,7 +340,7 @@ export class GalleryInfo
 	{
 		const files = this.plugin.app.vault.getFiles();
 		const docLinks = this.doc.querySelectorAll('a.internal-link');
-		for (let i = 0; i < docLinks.length; i++) 
+		for (let i = 0; i < docLinks.length; i++)
 		{
 			const docLink = docLinks[i] as HTMLElement;
 			const href:string = docLink?.dataset?.href;
@@ -351,20 +364,20 @@ export class GalleryInfo
 				{
 					continue;
 				}
-				
+
 				if (file instanceof TFile)
 				{
-					docLink.addEventListener('click', async () =>
+					docLink.addEventListener('click', () =>
 					{
 						void this.plugin.app.workspace.getLeaf(false).openFile(file);
 					});
-					
-					docLink.addEventListener('auxclick', async () =>
+
+					docLink.addEventListener('auxclick', () =>
 					{
 						void this.plugin.app.workspace.getLeaf(true).openFile(file);
 					});
-					
-					docLink.addEventListener('contextmenu', async () =>
+
+					docLink.addEventListener('contextmenu', () =>
 					{
 						void this.plugin.app.workspace.getLeaf(true).openFile(file);
 					});

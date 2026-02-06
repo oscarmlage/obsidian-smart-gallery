@@ -94,7 +94,7 @@ export class MediaGrid
 		for(let col = 0; col < columnCount; col++)
 		{
 			this.#columnEls.push(this.columnContainer.createDiv({ cls: 'gallery-grid-column' }));
-			this.#columnEls[col].style.width = columnWidth+"px";
+			this.#columnEls[col].setCssStyles({ width: columnWidth+"px" });
 		}
 
 		const selection: string[] = [];
@@ -144,7 +144,7 @@ export class MediaGrid
 
 				if(this.mediaSearch.maxHeight > 10)
 				{
-					visualEl.style.maxHeight = this.mediaSearch.maxHeight+"px";
+					visualEl.setCssStyles({ maxHeight: this.mediaSearch.maxHeight+"px" });
 				}
 
 				// Multiselect code
@@ -167,20 +167,20 @@ export class MediaGrid
 	setupClickEvents()
 	{
     	// Create gallery display Element		
-		this.imageFocusEl = this.displayEl.createDiv({ cls: 'ob-gallery-image-focus', attr: { style: 'display: none;' } })
+		this.imageFocusEl = this.displayEl.createDiv({ cls: 'ob-gallery-image-focus gallery-focus-hidden' })
 		const focusElContainer = this.imageFocusEl.createDiv({ attr: { class: 'focus-element-container' } })
-		this.focusImage = focusElContainer.createEl('img', { attr: { style: 'display: none;' } })
-		this.focusVideo = focusElContainer.createEl('video', { attr: { controls: 'controls', src: ' ', style: 'display: none; margin:auto;' } })
+		this.focusImage = focusElContainer.createEl('img', { cls: 'gallery-focus-hidden' })
+		this.focusVideo = focusElContainer.createEl('video', { cls: 'gallery-focus-hidden ob-gallery-video-focus', attr: { controls: 'controls', src: ' ' } })
 			
 		if ('ontouchstart' in document.documentElement === true)
 		{
-			this.displayEl.addEventListener('touchstart', (e) => {this.vidTouch(e)},true);
+			this.displayEl.addEventListener('touchstart', (e) => { void this.vidTouch(e); },true);
 		}
-		this.displayEl.addEventListener('click', (e) => {this.itemClick(e)});
+		this.displayEl.addEventListener('click', (e) => { void this.itemClick(e); });
 
 		this.displayEl.addEventListener('auxclick', this.plugin.auxClick.bind(this.plugin));
 
-		this.displayEl.addEventListener('contextmenu', async (e) =>
+		this.displayEl.addEventListener('contextmenu', (e) =>
 		{
 			if(this.mediaSearch.selectedEls.length == 0 && (e.target instanceof HTMLImageElement || e.target instanceof HTMLVideoElement))
 			{
@@ -226,7 +226,7 @@ export class MediaGrid
 			}
 		}
 
-		document.addEventListener('keydown', async (event) =>
+		document.addEventListener('keydown', (event) =>
 		{
 			// Mobile clicks don't seem to include shift key information
 			if(event.shiftKey)
@@ -236,14 +236,14 @@ export class MediaGrid
 
 		}, false)
 
-		document.addEventListener('keyup', async (event) =>
+		document.addEventListener('keyup', (event) =>
 		{
 			if(this.mediaSearch.selectMode && !event.shiftKey)
 			{
 				this.mediaSearch.selectMode = false;
 			}
 
-			if (this.imageFocusEl.style.getPropertyValue('display') != 'block')
+			if (!this.imageFocusEl.hasClass('gallery-image-focus-active'))
 			{
 				return;
 			}
@@ -257,11 +257,11 @@ export class MediaGrid
 			{
 			case 'ArrowLeft':
 				this.#imgFocusIndex--;
-				await focusShift();
+				void focusShift();
 				break;
 			case 'ArrowRight':
 				this.#imgFocusIndex++
-				await focusShift();
+				void focusShift();
 				break;
 			}
 
@@ -270,9 +270,10 @@ export class MediaGrid
 
 	async itemClick (evt:Event)
 	{
-		if (this.imageFocusEl.style.getPropertyValue('display') === 'block')
+		if (!this.imageFocusEl.hasClass('gallery-focus-hidden'))
 		{
-			this.imageFocusEl.style.setProperty('display', 'none')
+			this.imageFocusEl.addClass('gallery-focus-hidden')
+			this.imageFocusEl.removeClass('gallery-image-focus-active')
 			// Clear Focus video
 			this.focusVideo.src = ''
 			// Clear Focus image
@@ -283,9 +284,11 @@ export class MediaGrid
 				this.#pausedVideo.src = this.#pausedVideoUrl
 			}
 			// Hide focus image div
-			this.focusImage.style.setProperty('display', 'none')
+			this.focusImage.addClass('gallery-focus-hidden')
+			this.focusImage.removeClass('gallery-focus-visible')
 			// Hide focus video div
-			this.focusVideo.style.setProperty('display', 'none')
+			this.focusVideo.addClass('gallery-focus-hidden')
+			this.focusVideo.removeClass('gallery-focus-visible')
 			return;
 		}
 		evt.stopImmediatePropagation();
@@ -331,7 +334,8 @@ export class MediaGrid
 			// Read New image info
 			const focusImagePath = visualEl.src
 			this.#imgFocusIndex = this.mediaSearch.imgList.indexOf(focusImagePath)
-			this.imageFocusEl.style.setProperty('display', 'block')
+			this.imageFocusEl.removeClass('gallery-focus-hidden')
+			this.imageFocusEl.addClass('gallery-image-focus-active')
 			updateFocus(this.focusImage, this.focusVideo, this.mediaSearch.imgList[this.#imgFocusIndex], false)
 		}
 
@@ -340,7 +344,8 @@ export class MediaGrid
 			// Read video info
 			const focusImagePath = visualEl.src
 			this.#imgFocusIndex = this.mediaSearch.imgList.indexOf(focusImagePath)
-			this.imageFocusEl.style.setProperty('display', 'block')
+			this.imageFocusEl.removeClass('gallery-focus-hidden')
+			this.imageFocusEl.addClass('gallery-image-focus-active')
 			// Save clicked video info to set it back later
 			this.#pausedVideo = visualEl
 			this.#pausedVideoUrl = this.#pausedVideo.src
@@ -352,10 +357,9 @@ export class MediaGrid
 
 	async vidTouch (evt:Event)
 	{
-		let visualEl: (HTMLVideoElement);
 		if(evt.target instanceof HTMLVideoElement)
 		{
-			this.itemClick(evt);
+			void this.itemClick(evt);
 		}
 	}
 
@@ -407,7 +411,7 @@ export class MediaGrid
 
 		for(let col = 0; col < this.#columnEls.length; col++)
 		{
-			this.#columnEls[col].style.width = columnWidth+"px";
+			this.#columnEls[col].setCssStyles({ width: columnWidth+"px" });
 		}
 	}
 }

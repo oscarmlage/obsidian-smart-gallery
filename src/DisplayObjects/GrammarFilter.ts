@@ -30,7 +30,7 @@ export class GrammarFilter implements IFilter
 		this.#mediaGrid = mediaGrid;
 	
 		
-		this.containerEl.style.display = "flex";
+		this.containerEl.addClass("gallery-filter-container");
 		const filterLeftDiv = this.containerEl.createDiv({cls:"gallery-search-bar"});
 		const filterRightDiv = this.containerEl.createDiv();
 		const filterTopDiv = filterRightDiv.createDiv({cls:"gallery-search-bar"});
@@ -42,11 +42,10 @@ export class GrammarFilter implements IFilter
 			attr: { 'aria-label': loc('FILTER_ADVANCED_TOOLTIP'), spellcheck: false }
 		  })
 	  
-		  this.#grammarFilterEl.addEventListener('input', async () =>
+		  this.#grammarFilterEl.addEventListener('input', () =>
 		  {
 			parseAdvanceSearch(this.#grammarFilterEl.value, this.#mediaSearch, true);
-			await this.updateData();
-			await this.updateDisplay();
+			void this.updateData().then(() => this.updateDisplay());
 		  });
 		
 
@@ -77,12 +76,12 @@ export class GrammarFilter implements IFilter
 		this.#widthScaleEl.min = MIN_IMAGE_WIDTH+"";
 		this.#widthScaleEl.max = (this.#mediaGrid.areaWidth())+"";
 		this.#widthScaleEl.value = this.#mediaSearch.maxWidth+"";
-		this.#widthScaleEl.addEventListener('input', async () =>
+		this.#widthScaleEl.addEventListener('input', () =>
 		{
 		  this.#mediaSearch.maxWidth = parseInt(this.#widthScaleEl.value);
 		  if(this.#mediaGrid.haveColumnsChanged())
 		  {
-			await this.updateDisplay();
+			void this.updateDisplay();
 		  }
 		});
 	}

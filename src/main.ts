@@ -27,7 +27,7 @@ export default class GalleryTagsPlugin extends Plugin
 	imgResources: ImageResources = {}
 	metaResources: ImageResources = {}
   #bootstrapped: boolean;
-  
+
 
   async onload()
   {
@@ -54,7 +54,7 @@ export default class GalleryTagsPlugin extends Plugin
     });
 
     this.addSettingTab(new GallerySettingTab(this.app, this))
-    this.saveSettings();
+    void this.saveSettings();
 
     this.app.workspace.onLayoutReady(this.#bootstrap.bind(this));
 
@@ -69,7 +69,7 @@ export default class GalleryTagsPlugin extends Plugin
     {
       return this.settings.mobile;
     }
-    
+
     return this.settings.desktop;
   }
 
@@ -115,7 +115,7 @@ export default class GalleryTagsPlugin extends Plugin
 
   bootstrapFailed(cause:keyof typeof en)
   {
-    ToastMessage(loc('BOOTSTRAP_FAILURE', loc(cause)), 25, ()=>{this.#bootstrap()}, 'CONTEXT_RETRY');
+    ToastMessage(loc('BOOTSTRAP_FAILURE', loc(cause)), 25, ()=>{void this.#bootstrap()}, 'CONTEXT_RETRY');
   }
 
   async #bootstrap()
@@ -127,7 +127,7 @@ export default class GalleryTagsPlugin extends Plugin
     this.#bootstrapped = true;
   }
 
-  async buildCaches()
+  async buildCaches(): Promise<void>
   {
     this.buildTagCache();
     this.#buildImageCache();
@@ -137,11 +137,11 @@ export default class GalleryTagsPlugin extends Plugin
   // wait for thing to finish loading up
   async strapped(): Promise<boolean>
   {
-    while(this.#bootstrapped !== true) 
+    while(this.#bootstrapped !== true)
     {
       await sleep(300);
     }
-    
+
     return Promise.resolve(true);
   }
 
@@ -163,26 +163,26 @@ export default class GalleryTagsPlugin extends Plugin
   }
 
   #registerEvents()
-  {  
+  {
     // Resize event
     this.registerEvent(
       this.app.workspace.on("resize", () => {
-        try
-        {
-          if(this.onResize) 
+          try
           {
-            this.onResize()
+            if(this.onResize)
+            {
+              this.onResize()
+            }
           }
-        }
-        catch(e)
-        {
-          this.onResize = null;
-        }
+          catch
+          {
+            this.onResize = null;
+          }
       }));
-      
+
     // Metadata changed event
     this.registerEvent(
-      this.app.metadataCache.on("changed", async (file, data, cache) => 
+      this.app.metadataCache.on("changed", (file, _data, cache) =>
       {
         // Used for reacting to meta file creation events in real time
         if(this.embedQueue[file.path])
@@ -192,31 +192,31 @@ export default class GalleryTagsPlugin extends Plugin
             const path = this.embedQueue[file.path]
             this.finalizedQueue[file.path] = path;
             delete this.embedQueue[file.path];
-            
+
             this.metaResources[path] = file.path;
-            await addRemoteMeta(path, file, this);
+            void addRemoteMeta(path, file, this);
           }
           else
           {
             const imgTFile = this.app.vault.getAbstractFileByPath(this.embedQueue[file.path]);
-            
+
             if(imgTFile instanceof TFile)
             {
               this.finalizedQueue[file.path] = this.embedQueue[file.path];
               delete this.embedQueue[file.path];
-              
+
               this.metaResources[imgTFile.path] = file.path;
-              await addEmbededTags(imgTFile, file, this);
+              void addEmbededTags(imgTFile, file, this);
             }
           }
         }
         else if(this.finalizedQueue[file.path])
         {
-          GalleryInfoView.OpenLeaf(this, this.finalizedQueue[file.path]);
+          void GalleryInfoView.OpenLeaf(this, this.finalizedQueue[file.path]);
           delete this.finalizedQueue[file.path];
         }
 
-        
+
         // try to catch and cache any new tags
         const newTags = getTags(cache);
         for(let k = 0; k < newTags.length; k++)
@@ -226,12 +226,12 @@ export default class GalleryTagsPlugin extends Plugin
             this.tagCache.push(newTags[k])
           }
         }
-        
+
 		    const propertyList = Object.keys(this.settings.autoCompleteFields);
         for(let i = 0; i < propertyList.length; i++)
         {
           const field = propertyList[i];
-          
+
           if(!this.propertyCache[field])
           {
             this.propertyCache[field] = [];
@@ -253,32 +253,34 @@ export default class GalleryTagsPlugin extends Plugin
 
     // Image Renamed
     this.registerEvent(
-      this.app.vault.on("rename", async (file, oldPath) => 
+      this.app.vault.on("rename", (file, oldPath) =>
       {
         this.#imageRegister(file);
 
-        await sleep(300);
+        void (async () => {
+          await sleep(300);
 
-        const infoFile = await getImageInfo(oldPath, false, this);
+          const infoFile = await getImageInfo(oldPath, false, this);
 
-        this.metaResources[file.path] = infoFile.path;
-        delete this.metaResources[oldPath];
+          if(infoFile)
+          {
+            this.metaResources[file.path] = infoFile.path;
+            delete this.metaResources[oldPath];
 
-        // update the links in the meta file
-        if(infoFile)
-        {
-          await this.app.vault.process(infoFile, (data) =>{
-        		data = data.replaceAll(oldPath, file.path);
+            // update the links in the meta file
+            await this.app.vault.process(infoFile, (data) =>{
+              data = data.replaceAll(oldPath, file.path);
 
-        		const oldUri = preprocessUri(oldPath)
-        		const newUri = preprocessUri(file.path)
-        		data = data.replaceAll(oldUri, newUri);
+              const oldUri = preprocessUri(oldPath)
+              const newUri = preprocessUri(file.path)
+              data = data.replaceAll(oldUri, newUri);
 
-        		return data;
-        	});
-        }
+              return data;
+            });
+          }
+        })();
       }));
-            
+
     const options =  {capture: true}
     this.register(() => document.off('contextmenu', this.#imgSelector, this.clickImage, options));
     document.on('contextmenu', this.#imgSelector, this.clickImage, options);
@@ -301,7 +303,7 @@ export default class GalleryTagsPlugin extends Plugin
     this.getImgResources()[this.app.vault.getResourcePath(file)] = file.path;
   }
 
-  buildTagCache()
+  buildTagCache(): void
   {
     this.tagCache = [];
     this.propertyCache = {};
@@ -311,7 +313,7 @@ export default class GalleryTagsPlugin extends Plugin
       this.propertyCache[propertyList[m]] = [];
     }
 
-    
+
 		const files = this.app.vault.getMarkdownFiles();
 		for(let i = 0; i < files.length; i++)
 		{
@@ -346,7 +348,7 @@ export default class GalleryTagsPlugin extends Plugin
     this.imgResources = {};
 
 		const vaultFiles = this.app.vault.getFiles()
-		
+
 		for (const file of vaultFiles)
 		{
 			if (EXTENSIONS.contains(file.extension.toLowerCase()))
@@ -355,40 +357,40 @@ export default class GalleryTagsPlugin extends Plugin
 			}
 		}
   }
-  
+
 	async #buildMetaCache(): Promise<void>
 	{
 		this.metaResources = {};
 		const infoFolder = this.app.vault.getAbstractFileByPath(this.settings.imgDataFolder)
-	
+
 		if (infoFolder instanceof TFolder)
 		{
 			let cancel = false;
 			const progress = new ProgressModal(this, infoFolder.children.length, ()=>{cancel = true;})
 			progress.open();
 
-			for (let i = 0; i < infoFolder.children.length; i++) 
+			for (let i = 0; i < infoFolder.children.length; i++)
 			{
 				if(cancel)
 				{
 					new Notice(loc('CANCEL_LOAD_NOTICE'));
 					return;
 				}
-				
+
 				progress.updateProgress(i);
-				
+
 				const info = infoFolder.children[i];
         if(info instanceof TFile)
 				{
           let imgLink = await getimageLink(info, this);
-		
+
           if(info && imgLink)
           {
             this.metaResources[imgLink] = info.path
           }
         }
 			}
-			
+
 			progress.updateProgress(infoFolder.children.length);
 		}
 	}
@@ -402,11 +404,11 @@ export default class GalleryTagsPlugin extends Plugin
                               +`.community-modal-details video,`
                               +`.video-stream video`
                               +`#sr-flashcard-view video`;
-  
-  private clickImage = (event: MouseEvent) => 
+
+  private clickImage = (event: MouseEvent): void =>
   {
-    const targetEl = <HTMLImageElement|HTMLVideoElement>event.target;
-    if (!targetEl) 
+    const targetEl = event.target as HTMLImageElement|HTMLVideoElement;
+    if (!targetEl)
     {
       return;
     }
@@ -418,42 +420,45 @@ export default class GalleryTagsPlugin extends Plugin
 
     if(this.platformSettings().rightClickInfo)
     {
-      GalleryInfoView.OpenLeaf(this,targetEl.src);
+      void GalleryInfoView.OpenLeaf(this,targetEl.src);
     }
-    
+
     if(this.platformSettings().rightClickMenu)
     {
       new ImageMenu(event.pageX, event.pageY, [targetEl], null, null, this);
     }
   }
 
-  auxClick = async(event: MouseEvent) =>
+  auxClick = (event: MouseEvent): void =>
   {
     if(event.button != 1)
     {
       return;
     }
 
-    const targetEl = <HTMLImageElement|HTMLVideoElement>event.target;
-    if (!targetEl) 
+    const targetEl = event.target as HTMLImageElement|HTMLVideoElement;
+    if (!targetEl)
     {
       return;
     }
 
-    const infoFile = await getImageInfo(targetEl.src, true, this);
-    if(infoFile instanceof TFile)
-    {
-      this.app.workspace.getLeaf(true).openFile(infoFile);
-    }
+    void (async () => {
+      const infoFile = await getImageInfo(targetEl.src, true, this);
+      if(infoFile instanceof TFile)
+      {
+        void this.app.workspace.getLeaf(true).openFile(infoFile);
+      }
+    })();
   }
-  
+
   #refreshColors()
   {
-		// @ts-ignore
+		// @ts-ignore - getConfig is an internal API
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 		this.accentColor = this.app.vault.getConfig('accentColor');
 		this.accentColorDark = scaleColor(this.accentColor, 0.25);
 		this.accentColorLight = scaleColor(this.accentColor, 1.5);
-    
+
 		// Colors are now handled via CSS variables in styles.css
 		// using var(--interactive-accent) which Obsidian updates automatically
   }
@@ -461,7 +466,7 @@ export default class GalleryTagsPlugin extends Plugin
   onunload()
   {
     console.debug(loc("UNLOADING_PLUGIN_MESSAGE", loc('PLUGIN_NAME')))
-    
+
     this.embedQueue = {};
     this.finalizedQueue = {};
     this.tagCache = [];
@@ -471,9 +476,10 @@ export default class GalleryTagsPlugin extends Plugin
 
   async loadSettings()
   {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
     let changed = false;
-    for (let i = 0; i < this.settings.namedFilters.length; i++) 
+    for (let i = 0; i < this.settings.namedFilters.length; i++)
     {
       if(this.settings.namedFilters[i].filter.contains("="))
       {
@@ -484,7 +490,7 @@ export default class GalleryTagsPlugin extends Plugin
 
     if(changed)
     {
-      this.saveSettings();
+      void this.saveSettings();
     }
   }
 
@@ -506,7 +512,7 @@ export default class GalleryTagsPlugin extends Plugin
   showPanel = async function (this: GalleryTagsPlugin)
   {
     const workspace = this.app.workspace
-    workspace.getLeaf(false).setViewState({ type: OB_GALLERY })
+    void workspace.getLeaf(false).setViewState({ type: OB_GALLERY })
   };
 }
 

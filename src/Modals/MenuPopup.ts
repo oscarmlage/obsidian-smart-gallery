@@ -1,5 +1,8 @@
 import { offScreenPartial, screenOffset, sleep } from "../utils";
 
+declare function createDiv(options?: { cls?: string; text?: string }): HTMLDivElement;
+declare const activeWindow: Window;
+
 export class MenuPopup
 {
 	#onResult: (result:string) => void
@@ -12,19 +15,19 @@ export class MenuPopup
 	{
 		this.#onResult = onResult;
 		this.#self = createDiv({cls: "suggestion-container"})
-		this.#optionsArea = this.#self.createDiv("#suggestions-scroll");
-		this.#optionsArea.style.width = "200px";
-		this.#optionsArea.style.overflowY = "auto";
+		this.#optionsArea = this.#self.createDiv({cls: "menu-popup-options-area"});
 		this.#self.tabIndex = 0;
-		
 
-		this.#self.addEventListener("blur",async () => 
+
+		this.#self.addEventListener("blur", () =>
 		{
-			await sleep(100);
-			this.#cleanUp();
+			void (async () => {
+				await sleep(100);
+				this.#cleanUp();
+			})();
 		});
 
-		this.#self.addEventListener("mouseleave", (e) => 
+		this.#self.addEventListener("mouseleave", () =>
 		{
 			this.#cleanUp();
 		});
@@ -32,13 +35,12 @@ export class MenuPopup
 
 	AddLabel(label:string, color:string = null)
 	{
-		const info = this.#optionsArea.createDiv({cls: "suggestion-item"});
+		const info = this.#optionsArea.createDiv({cls: "suggestion-item menu-popup-break-word"});
 		info.innerText = label;
-		info.style.overflowWrap = "break-word";
 
 		if(color)
 		{
-			info.style.color = color;
+			info.setCssStyles({ color: color });
 		}
 	}
 
@@ -48,18 +50,17 @@ export class MenuPopup
 
 		if(color)
 		{
-			line.style.color = color;
+			line.setCssStyles({ color: color });
 		}
 	}
 
 	addItem(label: string, command:string, color:string = null)
 	{
-		const item = this.#optionsArea.createDiv({cls: "suggestion-item"});
+		const item = this.#optionsArea.createDiv({cls: "suggestion-item menu-popup-break-word"});
 		item.textContent = label;
 		item.dataset.href = command;
-		item.style.overflowWrap = "break-word";
-	
-		item.addEventListener("mouseover", (e) => {
+
+		item.addEventListener("mouseover", () => {
 			this.#select(item)
 		});
 
@@ -69,7 +70,7 @@ export class MenuPopup
 
 		if(color)
 		{
-			item.style.color = color;
+			item.setCssStyles({ color: color });
 		}
 	}
 
@@ -105,22 +106,20 @@ export class MenuPopup
 
 	show(posX:number,posY:number)
 	{
-		activeDocument.body.appendChild(this.#self);
-		
-		this.#self.style.left = (posX)+"px";
-		this.#self.style.top = (posY)+"px";
+		activeWindow.document.body.appendChild(this.#self);
+
+		this.#self.setCssStyles({ left: (posX)+"px", top: (posY)+"px" });
 
 		const optionsRect = this.#optionsArea.getBoundingClientRect();
-		this.#self.style.width = optionsRect.width+"px";
+		this.#self.setCssStyles({ width: optionsRect.width+"px" });
 
 		if(offScreenPartial(this.#self))
 		{
 			let x, y;
 			[x,y] = screenOffset(this.#self);
-			this.#self.style.left = (posX+x)+"px";
-			this.#self.style.top = (posY+y)+"px";
+			this.#self.setCssStyles({ left: (posX+x)+"px", top: (posY+y)+"px" });
 		}
-		
+
 		this.#self.focus();
 	}
 

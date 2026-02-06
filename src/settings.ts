@@ -21,8 +21,8 @@ export class GallerySettingTab extends PluginSettingTab
   {
     const { containerEl } = this
     let hiddenInfoInput = ''
-    let fuzzyFolders = new FuzzyFolders(this.app)
-    let fuzzyFiles = new FuzzyFiles(this.app)
+    const fuzzyFolders = new FuzzyFolders(this.app)
+    const fuzzyFiles = new FuzzyFiles(this.app)
 
 
     containerEl.empty()
@@ -35,9 +35,9 @@ export class GallerySettingTab extends PluginSettingTab
       .setButtonText(loc('SETTING_DATA_REFRESH_BUTTON'))
       .onClick(() =>
       {
-        this.plugin.buildCaches(); 
+        void this.plugin.buildCaches();
       }));
-    
+
     // Unique Mobile Settings
     new Setting(containerEl)
       .setName(loc('SETTING_UNIQUE_MOBILE_TITLE'))
@@ -51,9 +51,9 @@ export class GallerySettingTab extends PluginSettingTab
           await this.plugin.saveSettings()
         });
       })
-    
+
     // Platform Specific Section
-    containerEl.createEl('h2', { text: loc('SETTING_PLATFORM_HEADER') })
+    new Setting(containerEl).setName(loc('SETTING_PLATFORM_HEADER')).setHeading();
 
     // Should right click open the side panel anywhere in the app?
     new Setting(containerEl)
@@ -87,13 +87,13 @@ export class GallerySettingTab extends PluginSettingTab
     new Setting(containerEl)
       .setName(loc('SETTING_FILTER_TITLE'))
       .setDesc(loc('SETTING_FILTER_DESC'))
-      .addDropdown(dropdown => 
+      .addDropdown(dropdown =>
       {
         if(this.plugin.platformSettings().filterType == undefined)
         {
           this.plugin.platformSettings().filterType = FilterType.NONE;
         }
-        
+
         //@ts-ignore
         dropdown.addOption(FilterType[FilterType.NONE], loc("FILTER_TYPE_OPTION_"+FilterType.NONE));
         //@ts-ignore
@@ -115,27 +115,27 @@ export class GallerySettingTab extends PluginSettingTab
             case FilterType[FilterType.ADVANCED] : this.plugin.platformSettings().filterType = FilterType.ADVANCED; break;
             default: return;
           }
-          
+
           await this.plugin.saveSettings();
         });
       });
 
-    
+
     // Default Filter
     new Setting(containerEl)
       .setName(loc('SETTING_DEFAULT_FILTER_TITLE'))
       .setDesc(loc('SETTING_DEFAULT_FILTER_DESC'))
-      .addDropdown(dropdown => 
+      .addDropdown(dropdown =>
       {
         dropdown.addOption("", loc('SETTING_DEFAULT_FILTER_NONE'));
         dropdown.addOption("LAST_USED_FILTER", loc('LAST_USED_FILTER'));
 
-        for (let i = 0; i < this.plugin.settings.namedFilters.length; i++) 
+        for (let i = 0; i < this.plugin.settings.namedFilters.length; i++)
         {
           const name = this.plugin.settings.namedFilters[i].name;
           dropdown.addOption(name, name);
         }
-        
+
         if(validString(this.plugin.platformSettings().defaultFilter))
         {
           dropdown.setValue(this.plugin.platformSettings().defaultFilter);
@@ -148,7 +148,7 @@ export class GallerySettingTab extends PluginSettingTab
         dropdown.onChange( async value =>
         {
           this.plugin.platformSettings().defaultFilter = value;
-          
+
           await this.plugin.saveSettings();
         });
       });
@@ -170,8 +170,8 @@ export class GallerySettingTab extends PluginSettingTab
           this.plugin.platformSettings().width = Math.abs(numValue)
           await this.plugin.saveSettings()
         }))
-     
-    
+
+
     // Use max height?
     new Setting(containerEl)
       .setName(loc('SETTING_MAX_HEIGHT_TOGGLE_TITLE'))
@@ -207,10 +207,10 @@ export class GallerySettingTab extends PluginSettingTab
           await this.plugin.saveSettings()
         }))
     }
-    
+
     // Gallery Meta Section
-    containerEl.createEl('h2', { text: loc('SETTING_METADATA_HEADER') })
-    
+    new Setting(containerEl).setName(loc('SETTING_METADATA_HEADER')).setHeading();
+
     // Gallery meta folder
     const infoPathSetting = new Setting(containerEl)
       .setName(loc('SETTING_META_FOLDER_TITLE'))
@@ -221,19 +221,20 @@ export class GallerySettingTab extends PluginSettingTab
         {
           fuzzyFolders.onSelection = (s) =>{
             this.plugin.settings.imgDataFolder = s
-            infoPathSetting.settingEl.querySelector('button').textContent = this.plugin.settings.imgDataFolder
-            this.plugin.saveSettings()
+            const button = infoPathSetting.settingEl.querySelector('button');
+            if (button) button.textContent = this.plugin.settings.imgDataFolder
+            void this.plugin.saveSettings()
           }
 
           fuzzyFolders.open()
         }))
-        
+
     infoPathSetting.descEl.createDiv({ text: loc('SETTING_META_FOLDER_DESC1') })
     infoPathSetting.descEl.createDiv({ text: loc('SETTING_META_FOLDER_DESC2'), attr: { style: 'color: indianred;' } })
     infoPathSetting.descEl.createDiv({ text: loc('SETTING_META_FOLDER_DESC3') })
     infoPathSetting.descEl.createDiv({ text: loc('SETTING_META_FOLDER_DESC4'), attr: { style: 'font-weight: 900;' } })
     infoPathSetting.descEl.createDiv({ text: loc('SETTING_META_FOLDER_DESC5') })
-    
+
     // Alternative tags field
     new Setting(containerEl)
       .setName(loc('SETTING_ALTERNATIVE_TAGS_TITLE'))
@@ -249,7 +250,7 @@ export class GallerySettingTab extends PluginSettingTab
               this.plugin.buildTagCache();
             });
         })
-        
+
     // Should add keys even if they already exist
     new Setting(containerEl)
       .setName(loc('SETTING_QUICK_IMPORT_TITLE'))
@@ -264,7 +265,7 @@ export class GallerySettingTab extends PluginSettingTab
         });
       })
 
-    // Meta template file    
+    // Meta template file
     const metaTemplatSetting = new Setting(containerEl)
       .setName(loc('SETTING_META_TEMPLATE_TITLE'))
       .setDesc('')
@@ -274,8 +275,9 @@ export class GallerySettingTab extends PluginSettingTab
         {
           fuzzyFiles.onSelection = (s) =>{
             this.plugin.settings.imgmetaTemplatePath = s.substring(0,s.length-3)
-            metaTemplatSetting.settingEl.querySelector('button').textContent = this.plugin.settings.imgmetaTemplatePath
-            this.plugin.saveSettings()
+            const button = metaTemplatSetting.settingEl.querySelector('button');
+            if (button) button.textContent = this.plugin.settings.imgmetaTemplatePath
+            void this.plugin.saveSettings()
           }
 
           fuzzyFiles.open()
@@ -288,7 +290,7 @@ export class GallerySettingTab extends PluginSettingTab
     metaTemplatSetting.descEl.createDiv({ text: loc('SETTING_META_TEMPLATE_DESC6') });
     metaTemplatSetting.descEl.createDiv({ text: loc('SETTING_META_TEMPLATE_DESC7') });
     metaTemplatSetting.descEl.createDiv({ text: loc('SETTING_META_TEMPLATE_DESC8') });
-    
+
     // Hidden meta fields
     const hiddenInfoSetting = new Setting(containerEl)
       .setName(loc('SETTING_HIDDEN_INFO_TITLE'))
@@ -308,7 +310,7 @@ export class GallerySettingTab extends PluginSettingTab
         {
           this.plugin.settings.hiddenInfoTicker[hiddenInfoInput] = true;
           hiddenInfoInput = '';
-          this.plugin.saveSettings();
+          void this.plugin.saveSettings();
           this.display();
         }))
       .addButton(text => text
@@ -317,10 +319,10 @@ export class GallerySettingTab extends PluginSettingTab
         .onClick(() =>
         {
           this.plugin.settings.hiddenInfoTicker = Object.assign({}, DEFAULT_HIDDEN_INFO);
-          this.plugin.saveSettings();
+          void this.plugin.saveSettings();
           this.display();
         }));
-      
+
     this.drawToggleLists(hiddenInfoSetting.descEl, this.plugin.settings.hiddenInfoTicker);
 
     // Auto complete fields
@@ -342,7 +344,7 @@ export class GallerySettingTab extends PluginSettingTab
         {
           this.plugin.settings.autoCompleteFields[hiddenInfoInput] = true;
           hiddenInfoInput = '';
-          this.plugin.saveSettings();
+          void this.plugin.saveSettings();
           this.display();
         }))
       .addButton(text => text
@@ -351,16 +353,16 @@ export class GallerySettingTab extends PluginSettingTab
         .onClick(() =>
         {
           this.plugin.settings.autoCompleteFields = {};
-          this.plugin.saveSettings();
+          void this.plugin.saveSettings();
           this.display();
         }));
-      
+
     this.drawToggleLists(autoCompleteSetting.descEl, this.plugin.settings.autoCompleteFields);
-    
-    // Gallery Meta Section
-    containerEl.createEl('h2', { text: loc('SETTING_METADATA_HEADER') })
-    
-    for (let i = 0; i < this.plugin.settings.namedFilters.length; i++) 
+
+    // Gallery Filters Section
+    new Setting(containerEl).setName(loc('SETTING_METADATA_HEADER')).setHeading();
+
+    for (let i = 0; i < this.plugin.settings.namedFilters.length; i++)
     {
       const filter = this.plugin.settings.namedFilters[i];
 
@@ -376,16 +378,16 @@ export class GallerySettingTab extends PluginSettingTab
                 await this.plugin.saveSettings();
               });
 
-            text.inputEl.style.width = "100%";
+            text.inputEl.addClass('gallery-settings-textarea');
           })
-        .addButton(button => 
+        .addButton(button =>
           {
             button
             .setIcon("trash-2")
             .setTooltip(loc('SETTING_FILTER_REMOVE'))
-            .onClick(async () => 
+            .onClick(async () =>
             {
-              delete this.plugin.settings.namedFilters[i];
+              this.plugin.settings.namedFilters.splice(i, 1);
               await this.plugin.saveSettings();
               this.display();
             })
@@ -396,7 +398,7 @@ export class GallerySettingTab extends PluginSettingTab
   drawToggleLists(containerEl:HTMLElement, records:Record<string, boolean>)
   {
     const fields = Object.keys(records)
-    for (let i = 0; i < fields.length; i++) 
+    for (let i = 0; i < fields.length; i++)
     {
       const element = fields[i];
       new Setting(containerEl)
@@ -410,12 +412,12 @@ export class GallerySettingTab extends PluginSettingTab
             await this.plugin.saveSettings();
           });
         })
-        .addButton(button => 
+        .addButton(button =>
         {
           button
           .setIcon("trash-2")
           .setTooltip(loc('SETTING_HIDDEN_INFO_REMOVE'))
-          .onClick(async () => 
+          .onClick(async () =>
           {
             delete records[element];
             await this.plugin.saveSettings();

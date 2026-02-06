@@ -33,12 +33,12 @@ export class GalleryInfoView extends ItemView
       attr: { 'aria-label': loc('SIDE_PANEL_EDIT_TOOLTIP')}
     })
     
-    this.editToggle.addEventListener('click', (event) =>
+    this.editToggle.addEventListener('click', () =>
     {
       this.editing = !this.editing;
       
       this.updateToggleButton();
-      this.render();
+      void this.render();
     });
 
     this.contentEl = this.previewEl.createDiv({
@@ -83,7 +83,7 @@ export class GalleryInfoView extends ItemView
   {
     if(this.infoFile != null)
     {
-		  super.setState(state, result);
+		  void super.setState(state, result);
       return;
     }
 
@@ -98,12 +98,12 @@ export class GalleryInfoView extends ItemView
         if(infoFile instanceof TFile)
         {
           this.infoFile = infoFile;
-          this.updateInfoDisplay(null);
+          void this.updateInfoDisplay(null);
         }
 			}
 		}
     
-		super.setState(state, result);
+    void super.setState(state, result);
 	}
 
 
@@ -140,11 +140,11 @@ export class GalleryInfoView extends ItemView
       infoView = workspace.getLeavesOfType(OB_GALLERY_INFO)[0];
     }
     
-    workspace.revealLeaf(infoView);
+    await workspace.revealLeaf(infoView);
     
     if (infoView?.view instanceof GalleryInfoView)
     {
-      infoView.view.updateInfoDisplay(imgPath);
+      void infoView.view.updateInfoDisplay(imgPath);
       
       return infoView.view;
     }
@@ -194,7 +194,7 @@ export class GalleryInfoView extends ItemView
     this.clear()
 
     this.fileContent = infoText
-    this.render()
+    void this.render()
   }
 
   updateToggleButton()
@@ -216,20 +216,22 @@ export class GalleryInfoView extends ItemView
     {
       const test = this.contentEl.createEl("textarea", {cls: "gallery-info-panel-edit"} );
       test.value = this.fileContent;
-      test.addEventListener('blur', async () => {
-        if(this.fileContent == test.value)
-        {
-          return;
-        }
+      test.addEventListener('blur', () => {
+        void (async () => {
+          if(this.fileContent == test.value)
+          {
+            return;
+          }
 
-        this.fileContent = test.value;
-        await this.plugin.app.vault.modify(this.infoFile, this.fileContent);
-        new Notice(loc('SIDE_PANEL_SAVE_NOTICE'));
+          this.fileContent = test.value;
+          await this.plugin.app.vault.modify(this.infoFile, this.fileContent);
+          new Notice(loc('SIDE_PANEL_SAVE_NOTICE'));
+        })();
       });
     }
     else
     {
-      MarkdownRenderer.render(this.app, this.fileContent, this.contentEl, this.infoFile.path, this);
+      void MarkdownRenderer.render(this.app, this.fileContent, this.contentEl, this.infoFile.path, this);
     }
   }
 

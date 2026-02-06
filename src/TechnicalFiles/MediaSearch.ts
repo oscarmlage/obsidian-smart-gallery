@@ -39,10 +39,10 @@ export class MediaSearch
 	imgList: string[] = [];
 	totalCount: number = 0;
 	selectMode: boolean = false;
-	
+
 	redraw: boolean = false;
 	selectedEls: (HTMLVideoElement|HTMLImageElement)[] = [];
-	
+
 	constructor(plugin: GalleryTagsPlugin)
 	{
 		this.plugin = plugin;
@@ -72,8 +72,8 @@ export class MediaSearch
 
 	updateSort(sorting:Sorting, reverse:boolean)
 	{
-		if(!this.redraw 
-			&& sorting == this.sorting 
+		if(!this.redraw
+			&& sorting == this.sorting
 			&& reverse == this.reverse)
 		{
 			return;
@@ -85,7 +85,7 @@ export class MediaSearch
 			switch(this.sorting)
 			{
 				case Sorting.UNSORTED: break;
-				case Sorting.NAME: 
+				case Sorting.NAME:
 				{
 					this.imgList = this.imgList.sort((a,b)=>
 					{
@@ -94,18 +94,18 @@ export class MediaSearch
 						as = as.substring(as.lastIndexOf('/'));
 						bs = bs.substring(bs.lastIndexOf('/'));
 						return as.localeCompare(bs);
-					}); 
+					});
 					break;
 				}
-				case Sorting.PATH: 
+				case Sorting.PATH:
 				{
 					this.imgList = this.imgList.sort((a,b)=>
 					{
 						return this.plugin.imgResources[a].localeCompare(this.plugin.imgResources[b]);
-					}); 
+					});
 					break;
 				}
-				case Sorting.CDATE: 
+				case Sorting.CDATE:
 				{
 					this.imgList = this.imgList.sort((a,b)=>
 					{
@@ -122,10 +122,10 @@ export class MediaSearch
 							return 0;
 						}
 						return -1;
-					}); 
+					});
 					break;
 				}
-				case Sorting.MDATE: 
+				case Sorting.MDATE:
 				{
 					this.imgList = this.imgList.sort((a,b)=>
 					{
@@ -153,7 +153,7 @@ export class MediaSearch
 							return 0;
 						}
 						return -1;
-					}); 
+					});
 					break;
 				}
 				case Sorting.SIZE:
@@ -173,7 +173,7 @@ export class MediaSearch
 							return 0;
 						}
 						return -1;
-					}); 
+					});
 					break;
 				}
 			}
@@ -222,7 +222,7 @@ export class MediaSearch
 				}
 			}
 		}
-		
+
 		if (this.customList && this.customList.length > 0)
 		{
 			this.imgList = this.customList.filter(value => !Number.isNaN(value)).map(i => this.imgList[i])
@@ -230,13 +230,12 @@ export class MediaSearch
 
 		this.redraw = true;
 		this.updateSort(this.sorting, this.reverse);
-		
+
 	}
 
 	setNamedFilter(filter:string)
 	{
-		this.plugin.settings.namedFilters
-		for (let i = 0; i < this.plugin.settings.namedFilters.length; i++) 
+		for (let i = 0; i < this.plugin.settings.namedFilters.length; i++)
 		{
 			if(this.plugin.settings.namedFilters[i].name.toLowerCase() == filter.toLowerCase())
 			{
@@ -244,7 +243,7 @@ export class MediaSearch
 				return;
 			}
 		}
-		
+
 		console.warn(loc('WARN_NO_FILTER_NAME', filter));
 		new Notice(loc('WARN_NO_FILTER_NAME', filter));
 	}
@@ -275,11 +274,11 @@ export class MediaSearch
 		filterCopy += "\nsort:" + Sorting[this.sorting];
 		filterCopy += "\nreverseOrder:" + this.reverse;
 		filterCopy += "\nrandom:" + this.random;
-		
+
 		const frontList = Object.keys(this.front);
 		if(frontList.length > 0)
 		{
-			for (let i = 0; i < frontList.length; i++) 
+			for (let i = 0; i < frontList.length; i++)
 			{
 				filterCopy += "\n" + frontList[i] + ":" + this.front[frontList[i]];
 			}
@@ -291,7 +290,7 @@ export class MediaSearch
 	}
 
 	setFilter(filter:string)
-	{		
+	{
 		const lines = filter.split(/[\n\r]/);
 		for(let i = 0; i < lines.length; i++)
 		{
@@ -305,34 +304,34 @@ export class MediaSearch
 
 		  switch(parts[0].trim().toLocaleLowerCase())
 		  {
-			case 'path' : 
+			case 'path' :
 			this.path = parts[1];
 			break;
-			case 'name' : 
+			case 'name' :
 			this.name = parts[1];
 			break;
-			case 'tags' : 
+			case 'tags' :
 			this.tag = parts[1];
 			break;
-			case 'regex' : 
+			case 'regex' :
 			this.regex = parts[1];
 			break;
-			case 'matchcase' : 
+			case 'matchcase' :
 			this.matchCase = (parts[1].toLocaleLowerCase() === "true");
 			break;
-			case 'exclusive' : 
+			case 'exclusive' :
 			this.exclusive = (parts[1].toLocaleLowerCase() === "true");
 			break;
-			case 'imgwidth' : 
+			case 'imgwidth' :
 			this.maxWidth = parseInt(parts[1]);
 			break;
-			case 'sort' : 
+			case 'sort' :
 			this.stringToSort(parts[1]);
 			break;
-			case 'reverseorder' : 
+			case 'reverseorder' :
 			this.reverse = (parts[1].toLocaleLowerCase() === "true");
 			break;
-			case 'random' : 
+			case 'random' :
 			this.random = parseInt(parts[1]);
 			break;
 			default :
@@ -383,7 +382,7 @@ export class MediaSearch
 		const frontList = Object.keys(this.front);
 		const frontFilters:Criteria[][] = [];
 
-		for (let f = 0; f < frontList.length; f++) 
+		for (let f = 0; f < frontList.length; f++)
 		{
 			frontFilters[f] = parseFilterInfo(this.front[frontList[f]])
 			if(frontFilters[f].length > 0)
@@ -417,7 +416,7 @@ export class MediaSearch
 
 					let score = this.#matchScore(imgTags, tagFilter, this.matchCase, this.exclusive);
 
-					for (let f = 0; f < frontList.length; f++) 
+					for (let f = 0; f < frontList.length; f++)
 					{
 						let field:string[] = [];
 						if(Object.prototype.hasOwnProperty.call(frontMatter, frontList[f]))
@@ -427,7 +426,7 @@ export class MediaSearch
 						score += this.#matchScore(field, frontFilters[f], this.matchCase, this.exclusive);
 					}
 
-					if(( validFilter && score > 0 ) 
+					if(( validFilter && score > 0 )
 					|| ( !validFilter && score >= 0 ))
 					{
 						this.imgList.push(key);
@@ -436,13 +435,13 @@ export class MediaSearch
 				}
 			}
 		}
-	}	
+	}
 
 	#buildRegex():RegExp[]
 	{
 		let reg:RegExp[] = [];
 		const names = this.name.split(/[;,\n\r]/);
-		for (let i = 0; i < names.length; i++) 
+		for (let i = 0; i < names.length; i++)
 		{
 			names[i] = names[i].trim();
 			if(names[i] == "")
@@ -450,7 +449,7 @@ export class MediaSearch
 				continue;
 			}
 
-			try 
+			try
 			{
 				if(this.regex.trim() != "")
 				{
@@ -464,8 +463,9 @@ export class MediaSearch
 				{
 					reg.push(new RegExp(`^${this.path}.*${names[i]}.*$`));
 				}
-			} 
-			catch (error)
+			}
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			catch (_error)
 			{
 				console.warn(loc('BAD_REGEX_WARNING'))
 			}
@@ -515,7 +515,7 @@ export class MediaSearch
 				{
 					return fail;
 				}
-				
+
 				if(!exclusive && !exclusiveInternal)
 				{
 					return 1;
@@ -563,7 +563,7 @@ export class MediaSearch
 				if(tags[i].toLowerCase().contains(tagFilter))
 				{
 					return true;
-				} 
+				}
 			}
 		}
 
@@ -576,14 +576,20 @@ export class MediaSearch
 		if(imgInfoCache.frontmatter)
 		{
 			const frontList = Object.keys(imgInfoCache.frontmatter);
-			for (let i = 0; i < frontList.length; i++) 
+			for (let i = 0; i < frontList.length; i++)
 			{
-				let element = imgInfoCache.frontmatter[frontList[i]] ?? []
-				if (!Array.isArray(element)) 
-				{ 
-					element = [element]; 
+				const rawElement = (imgInfoCache.frontmatter as Record<string, unknown>)[frontList[i]] ?? [];
+				let element: string[];
+				if (!Array.isArray(rawElement))
+				{
+					const stringValue = typeof rawElement === 'object' && rawElement !== null ? JSON.stringify(rawElement) : String(rawElement as string | number | boolean);
+					element = [stringValue];
 				}
-				
+				else
+				{
+					element = rawElement as string[];
+				}
+
 				result[frontList[i]] = element;
 			}
 		}

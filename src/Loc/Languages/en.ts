@@ -39,7 +39,7 @@ export default
 	SETTING_METADATA_HEADER: "Image Metadata",
 	SETTING_META_FOLDER_TITLE: "Gallery info folder",
 	SETTING_META_FOLDER_DESC1: "Specify an existing vault folder for the gallery plugin to store image information/notes as markdown files.",
-	SETTING_META_FOLDER_DESC2: "E.g. \`Resources/Gallery\`.",
+	SETTING_META_FOLDER_DESC2: "E.g. `Resources/Gallery`.",
 	SETTING_META_FOLDER_DESC3: "On first activation the default is unspecified. Thus the info functionality of the Main gallery is diabled.",
 	SETTING_META_FOLDER_DESC4: "Folder must already exist (plugin will not create it).",
 	SETTING_META_FOLDER_DESC5: "If a folder is not specified no Image Information notes are created (to be used in the main gallery).",

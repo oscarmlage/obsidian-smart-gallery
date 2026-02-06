@@ -12,6 +12,8 @@ import { SuggestionPopup } from "./SuggestionPopup";
 import { MenuPopup } from "./MenuPopup";
 import { CONVERSION_SUPPORT } from "../TechnicalFiles/Constants";
 
+declare function createEl<K extends keyof HTMLElementTagNameMap>(tag: K, options?: { cls?: string; text?: string }): HTMLElementTagNameMap[K];
+
 enum Options
 {
 	Error = 0,
@@ -48,7 +50,7 @@ export class ImageMenu extends MenuPopup
 
 	constructor(posX:number, posY:number, targets:(HTMLVideoElement|HTMLImageElement)[], mediaSearch:MediaSearch, mediaGrid:MediaGrid, plugin: GalleryTagsPlugin, infoView:GalleryInfoView = null)
 	{
-		super(posX, posY, (result) => {this.#submit(result)});
+		super(posX, posY, (result) => { void this.#submit(result); });
 
 		this.#plugin = plugin;
 		this.#mediaSearch = mediaSearch;
@@ -102,7 +104,7 @@ export class ImageMenu extends MenuPopup
 				this.#isRemote = false;
 				this.AddLabel(loc('IMAGE_MENU_COUNT',this.#targets.length.toString()));
 				this.addSeparator();
-				
+
 				this.#createItem(Options.ClearSelection);
 			}
 
@@ -114,7 +116,7 @@ export class ImageMenu extends MenuPopup
 			{
 				this.#createItem(Options.SelectAll);
 			}
-			
+
 			this.addSeparator();
 			if(this.#targets.length == 1 && !this.#isRemote)
 			{
@@ -132,14 +134,14 @@ export class ImageMenu extends MenuPopup
 			}
 
 			this.#createItem(Options.CopyImageLinks);
-			
+
 			if(!this.#isRemote)
 			{
 				this.#createItem(Options.CopyImagesBlock);
 			}
 
 			this.#createItem(Options.CopyMetaLinks);
-			
+
 			this.addSeparator();
 
 			this.#createItem(Options.AddTag);
@@ -148,17 +150,17 @@ export class ImageMenu extends MenuPopup
 				this.#createItem(Options.PullMetaFromFile);
 			}
 			this.#createItem(Options.RemoveTag);
-			
+
 			if(!this.#isRemote)
 			{
 				this.#createItem(Options.MoveImages);
-			
+
 				if(this.#targets.length == 1)
 				{
 					this.#createItem(Options.Rename);
 				}
 			}
-			
+
 			this.addSeparator();
 
 			if(!this.#isRemote)
@@ -189,9 +191,9 @@ export class ImageMenu extends MenuPopup
 	{
 		const result = Options[responce as keyof typeof Options];
 		if(this.#targets.length < 50 ||
-			(result == Options.StartSelection 
-			|| result == Options.EndSelection 
-			|| result == Options.SelectAll 
+			(result == Options.StartSelection
+			|| result == Options.EndSelection
+			|| result == Options.SelectAll
 			|| result == Options.ClearSelection))
 		{
 			this.#results(result);
@@ -202,9 +204,9 @@ export class ImageMenu extends MenuPopup
 		const commandText = loc("IMAGE_MENU_COMMAND_"+result);
 		const confirmText= loc('MASS_CONTEXT_CONFIRM', this.#targets.length.toString(), commandText);
 
-		const confirm = new ConfirmModal(this.#plugin.app, 
+		const confirm = new ConfirmModal(this.#plugin.app,
 			confirmText,
-			() => {this.#results(result);})
+			() => { void this.#results(result); })
 		confirm.open();
 	}
 
@@ -213,28 +215,29 @@ export class ImageMenu extends MenuPopup
 		switch(result)
 		{
 			case Options.OpenImageFile: this.#resultOpenImage(); break;
-			case Options.OpenMetaFile: this.#resultOpenMeta(); break;
+			case Options.OpenMetaFile: void this.#resultOpenMeta(); break;
 			case Options.StartSelection: this.#mediaSearch.selectMode = true; break;
 			case Options.EndSelection: this.#mediaSearch.selectMode = false; break;
 			case Options.SelectAll: this.#mediaGrid.selectAll(); break;
 			case Options.ClearSelection: this.#mediaGrid.clearSelection(); break;
-			case Options.CopyImageLinks: this.#resultCopyImageLink(); break;
-			case Options.CopyMetaLinks: this.#resultCopyMetaLink(); break;
+			case Options.CopyImageLinks: void this.#resultCopyImageLink(); break;
+			case Options.CopyMetaLinks: void this.#resultCopyMetaLink(); break;
 			case Options.AddTag: this.#resultAddTag(); break;
-			case Options.PullMetaFromFile: this.#resultPullTags(); break;
+			case Options.PullMetaFromFile: void this.#resultPullTags(); break;
 			case Options.RemoveTag: this.#resultRemoveTag(); break;
 			case Options.MoveImages: this.#resultMoveImages(); break;
 			case Options.Rename: this.#resultRenameImage(); break;
-			case Options.DeleteImage: this.#resultDeleteImage(); break;
-			case Options.DeleteMeta: this.#resultDeleteMeta(); break;
-			case Options.CopyImage: this.#resultCopyImage(); break;
-			case Options.ShareMedia: this.#resultShareMedia(); break;
-			case Options.OpenInfoLeaf: this.#resultOpenInfoLeaf(); break;
-			case Options.CopyImagesBlock: this.#resultCopyImagesBlock(); break;
-			default: 
+			case Options.DeleteImage: void this.#resultDeleteImage(); break;
+			case Options.DeleteMeta: void this.#resultDeleteMeta(); break;
+			case Options.CopyImage: void this.#resultCopyImage(); break;
+			case Options.ShareMedia: void this.#resultShareMedia(); break;
+			case Options.OpenInfoLeaf: void this.#resultOpenInfoLeaf(); break;
+			case Options.CopyImagesBlock: void this.#resultCopyImagesBlock(); break;
+			default: {
 				const error = loc('MENU_OPTION_FAULT', Options[result]);
 				new Notice(error);
 				console.error(error);
+			}
 		}
 	}
 
@@ -249,7 +252,7 @@ export class ImageMenu extends MenuPopup
 		const file = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[source])
 		if (file instanceof TFile)
 		{
-			this.#plugin.app.workspace.getLeaf(false).openFile(file)
+			void this.#plugin.app.workspace.getLeaf(false).openFile(file)
 		}
 	}
 
@@ -264,7 +267,7 @@ export class ImageMenu extends MenuPopup
 		const infoFile = await getImageInfo(this.#getPath(source), true, this.#plugin);
 		if (infoFile instanceof TFile)
 		{
-			this.#plugin.app.workspace.getLeaf(false).openFile(infoFile)
+			void this.#plugin.app.workspace.getLeaf(false).openFile(infoFile)
 		}
 	}
 
@@ -276,7 +279,7 @@ export class ImageMenu extends MenuPopup
 		}
 
 		const source = this.#getSource(this.#targets[0]);
-		
+
 		await GalleryInfoView.OpenLeaf(this.#plugin, source);
 	}
 
@@ -286,7 +289,7 @@ export class ImageMenu extends MenuPopup
 		{
 			this.#infoView.clear()
 		}
-		
+
 		const abstractFile = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[this.#getSource(this.#targets[0])]);
 		if (!(abstractFile instanceof TFile)) {
 			new Notice(loc('PLATFORM_COPY_NOT_SUPPORTED'));
@@ -300,20 +303,12 @@ export class ImageMenu extends MenuPopup
 		{
 			const shareData: ShareData = {}
 			shareData.title = blob.name;
-			const file:File = ({
-				lastModified:imgFile.stat.mtime,
-				webkitRelativePath:'/', 
-				size:blob.size, 
-				type:blob.type, 
-				name:blob.name,
-				arrayBuffer:blob.arrayBuffer,
-				slice:blob.slice,
-				stream:blob.stream,
-				text:blob.text,
-				prototype:blob.prototype
-			} as File)
+			const file = new File([blob], imgFile.name, {
+				type: blob.type,
+				lastModified: imgFile.stat.mtime
+			});
 			shareData.files = [file];
-			
+
 			if(navigator.canShare(shareData))
 			{
 				try
@@ -388,7 +383,7 @@ export class ImageMenu extends MenuPopup
 
 	#isVideoSupported():boolean
 	{
-		if(Platform.isWin 
+		if(Platform.isWin
 		|| Platform.isMacOS
 		|| Platform.isLinux)
 		{
@@ -418,10 +413,10 @@ export class ImageMenu extends MenuPopup
 		{
 			this.#infoView.clear()
 		}
-		
+
 		let links = "";
 
-		for (let i = 0; i < this.#targets.length; i++) 
+		for (let i = 0; i < this.#targets.length; i++)
 		{
 			const source = this.#getSource(this.#targets[i]);
 			const file = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[source])
@@ -447,10 +442,10 @@ export class ImageMenu extends MenuPopup
 		{
 			this.#infoView.clear()
 		}
-		
+
 		let names = "";
 
-		for (let i = 0; i < this.#targets.length; i++) 
+		for (let i = 0; i < this.#targets.length; i++)
 		{
 			const source = this.#getSource(this.#targets[i]);
 			const file = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[source])
@@ -463,10 +458,10 @@ export class ImageMenu extends MenuPopup
 		let filter = this.#mediaSearch.getFilter();
 
 		let result = filter.substring(0,filter.indexOf("name:"));
-		
+
 		result += "name:"+names;
 		result += filter.substring(filter.indexOf("\n",filter.indexOf("name:")));
-		
+
 		await navigator.clipboard.writeText(result);
 
 		new Notice(loc('COPIED_FILTER'));
@@ -478,21 +473,21 @@ export class ImageMenu extends MenuPopup
 		{
 			this.#infoView.clear()
 		}
-		
+
 		let links = "";
 
 		let cancel = false;
 		const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
 		progress.open();
 
-		for (let i = 0; i < this.#targets.length; i++) 
+		for (let i = 0; i < this.#targets.length; i++)
 		{
 			if(cancel)
 			{
 				new Notice(loc('GENERIC_CANCELED'));
 				return;
 			}
-			
+
 			progress.updateProgress(i);
 
 			const source = this.#getSource(this.#targets[i]);
@@ -511,33 +506,35 @@ export class ImageMenu extends MenuPopup
 	#resultAddTag()
 	{
 		const fuzzyTags = new FuzzyTags(this.#plugin)
-		fuzzyTags.onSelection = async (s) =>{
-			const tag = s.trim();
-			if(!validString(tag))
-			{
-				return;
-			}
-
-			let cancel = false;
-			const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
-			progress.open();
-	
-			for (let i = 0; i < this.#targets.length; i++) 
-			{
-				if(cancel)
+		fuzzyTags.onSelection = (s) => {
+			void (async () => {
+				const tag = s.trim();
+				if(!validString(tag))
 				{
-					new Notice(loc('GENERIC_CANCELED'));
 					return;
 				}
-				
-				progress.updateProgress(i);
-	
-				const source = this.#getSource(this.#targets[i]);
-				const infoFile = await getImageInfo(this.#getPath(source), true, this.#plugin);
-				addTag(infoFile, tag, this.#plugin);
-			}
-			
-			new Notice(loc('ADDED_TAG'));
+
+				let cancel = false;
+				const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
+				progress.open();
+
+				for (let i = 0; i < this.#targets.length; i++)
+				{
+					if(cancel)
+					{
+						new Notice(loc('GENERIC_CANCELED'));
+						return;
+					}
+
+					progress.updateProgress(i);
+
+					const source = this.#getSource(this.#targets[i]);
+					const infoFile = await getImageInfo(this.#getPath(source), true, this.#plugin);
+					await addTag(infoFile, tag, this.#plugin);
+				}
+
+				new Notice(loc('ADDED_TAG'));
+			})();
 		}
 
 		fuzzyTags.open()
@@ -545,13 +542,13 @@ export class ImageMenu extends MenuPopup
 
 	async #resultPullTags()
 	{
-		const promises: Promise<any>[] = []
+		const promises: Promise<boolean>[] = []
 
 		let cancel = false;
 		const progress = new ProgressModal(this.#plugin, this.#targets.length+1, ()=>{cancel = true;})
 		progress.open();
 
-		for (let i = 0; i < this.#targets.length; i++) 
+		for (let i = 0; i < this.#targets.length; i++)
 		{
 			if(cancel)
 			{
@@ -577,7 +574,7 @@ export class ImageMenu extends MenuPopup
 			else
 			{
 				infoFile = await createMetaFile(this.#plugin.getImgResources()[source], this.#plugin);
-				
+
 				if(infoFile)
 				{
 					this.#plugin.getMetaResources()[file.path] = infoFile.path;
@@ -587,41 +584,43 @@ export class ImageMenu extends MenuPopup
 
 		await Promise.all(promises);
 		progress.updateProgress(this.#targets.length);
-		
+
 		new Notice(loc('ADDED_TAG'));
 	}
-	
+
 
 	#resultRemoveTag()
 	{
 		const fuzzyTags = new FuzzyTags(this.#plugin)
-		fuzzyTags.onSelection = async (s) =>{
-			const tag = s.trim();
-			if(!validString(tag))
-			{
-				return;
-			}
-
-			let cancel = false;
-			const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
-			progress.open();
-	
-			for (let i = 0; i < this.#targets.length; i++) 
-			{
-				if(cancel)
+		fuzzyTags.onSelection = (s) => {
+			void (async () => {
+				const tag = s.trim();
+				if(!validString(tag))
 				{
-					new Notice(loc('GENERIC_CANCELED'));
 					return;
 				}
-				
-				progress.updateProgress(i);
-	
-				const source = this.#getSource(this.#targets[i]);
-				const infoFile = await getImageInfo(this.#getPath(source), true, this.#plugin);
-				removeTag(infoFile, tag, this.#plugin);
-			}
-			
-			new Notice(loc('REMOVED_TAG'));
+
+				let cancel = false;
+				const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
+				progress.open();
+
+				for (let i = 0; i < this.#targets.length; i++)
+				{
+					if(cancel)
+					{
+						new Notice(loc('GENERIC_CANCELED'));
+						return;
+					}
+
+					progress.updateProgress(i);
+
+					const source = this.#getSource(this.#targets[i]);
+					const infoFile = await getImageInfo(this.#getPath(source), true, this.#plugin);
+					await removeTag(infoFile, tag, this.#plugin);
+				}
+
+				new Notice(loc('REMOVED_TAG'));
+			})();
 		}
 
 		fuzzyTags.open()
@@ -630,35 +629,36 @@ export class ImageMenu extends MenuPopup
 	#resultMoveImages()
 	{
 		const fuzzyFolders = new FuzzyFolders(this.#plugin.app)
-        fuzzyFolders.onSelection = async (s) =>
-		{
-			let cancel = false;
-			const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
-			progress.open();
+        fuzzyFolders.onSelection = (s) => {
+			void (async () => {
+				let cancel = false;
+				const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
+				progress.open();
 
-			for (let i = 0; i < this.#targets.length; i++) 
-			{
-				if(cancel)
+				for (let i = 0; i < this.#targets.length; i++)
 				{
-					new Notice(loc('GENERIC_CANCELED'));
-					return;
-				}
-				
-				progress.updateProgress(i);
+					if(cancel)
+					{
+						new Notice(loc('GENERIC_CANCELED'));
+						return;
+					}
 
-				const source = this.#getSource(this.#targets[i]);
-				const file = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[source])
-				if(file)
-				{
-					const newPath = s+"/"+file.name
-					delete this.#plugin.getImgResources()[source];
-					await this.#plugin.app.fileManager.renameFile(file, newPath);
-				}
-			}
-	
-			new Notice(loc('MOVED_IMAGE'));
+					progress.updateProgress(i);
 
-			await this.#refreshImageGrid();
+					const source = this.#getSource(this.#targets[i]);
+					const file = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[source])
+					if(file)
+					{
+						const newPath = s+"/"+file.name
+						delete this.#plugin.getImgResources()[source];
+						await this.#plugin.app.fileManager.renameFile(file, newPath);
+					}
+				}
+
+				new Notice(loc('MOVED_IMAGE'));
+
+				await this.#refreshImageGrid();
+			})();
 		}
 
 		fuzzyFolders.open()
@@ -681,33 +681,34 @@ export class ImageMenu extends MenuPopup
 				const filtered = files.filter((f) => (f instanceof TFile))
 				return filtered.map((f) => f.path)
 			},
-        	async (newName) =>
-			{
-				const file = this.#plugin.app.vault.getAbstractFileByPath(original);
-				if (!(file instanceof TFile)) {
-					new Notice(loc('CONFLICT_NOTICE_PATH', original));
-					return;
-				}
-				if(!newName.contains(file.extension))
-				{
-					newName += file.extension;
-				}
+			(newName) => {
+				void (async () => {
+					const file = this.#plugin.app.vault.getAbstractFileByPath(original);
+					if (!(file instanceof TFile)) {
+						new Notice(loc('CONFLICT_NOTICE_PATH', original));
+						return;
+					}
+					if(!newName.contains(file.extension))
+					{
+						newName += file.extension;
+					}
 
-				const conflict = this.#plugin.app.vault.getAbstractFileByPath(newName);
-				if(conflict)
-				{
-					new Notice(loc('CONFLICT_NOTICE_PATH', newName));
-					return;
-				}
+					const conflict = this.#plugin.app.vault.getAbstractFileByPath(newName);
+					if(conflict)
+					{
+						new Notice(loc('CONFLICT_NOTICE_PATH', newName));
+						return;
+					}
 
-				if(file)
-				{
-					delete this.#plugin.getImgResources()[this.#targets[0].src];
-					await this.#plugin.app.fileManager.renameFile(file, newName);
-				}
-				new Notice(loc('MOVED_IMAGE'));
-	
-				await this.#refreshImageGrid();
+					if(file)
+					{
+						delete this.#plugin.getImgResources()[this.#targets[0].src];
+						await this.#plugin.app.fileManager.renameFile(file, newName);
+					}
+					new Notice(loc('MOVED_IMAGE'));
+
+					await this.#refreshImageGrid();
+				})();
 			});
 		suggesion.open();
 	}
@@ -723,24 +724,24 @@ export class ImageMenu extends MenuPopup
 		const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
 		progress.open();
 
-		for (let i = 0; i < this.#targets.length; i++) 
+		for (let i = 0; i < this.#targets.length; i++)
 		{
 			if(cancel)
 			{
 				new Notice(loc('GENERIC_CANCELED'));
 				return;
 			}
-			
+
 			progress.updateProgress(i);
 
 			const source = this.#getSource(this.#targets[i]);
 			const infoFile = await getImageInfo(this.#getPath(source), false, this.#plugin);
 			if(infoFile)
 			{
-				await this.#plugin.app.vault.delete(infoFile);
+				await this.#plugin.app.fileManager.trashFile(infoFile);
 			}
 		}
-		
+
 		new Notice(loc('DELETED_META'));
 	}
 
@@ -755,14 +756,14 @@ export class ImageMenu extends MenuPopup
 		const progress = new ProgressModal(this.#plugin, this.#targets.length, ()=>{cancel = true;})
 		progress.open();
 
-		for (let i = 0; i < this.#targets.length; i++) 
+		for (let i = 0; i < this.#targets.length; i++)
 		{
 			if(cancel)
 			{
 				new Notice(loc('GENERIC_CANCELED'));
 				return;
 			}
-			
+
 			progress.updateProgress(i);
 
 			const source = this.#getSource(this.#targets[i]);
@@ -770,12 +771,12 @@ export class ImageMenu extends MenuPopup
 			const infoFile = await getImageInfo(this.#plugin.getImgResources()[source], false, this.#plugin);
 			if(file)
 			{
-				await this.#plugin.app.vault.delete(file);
+				await this.#plugin.app.fileManager.trashFile(file);
 				delete this.#plugin.getImgResources()[source];
 			}
 			if(infoFile)
 			{
-				this.#plugin.app.vault.delete(infoFile);
+				void this.#plugin.app.fileManager.trashFile(infoFile);
 			}
 		}
 

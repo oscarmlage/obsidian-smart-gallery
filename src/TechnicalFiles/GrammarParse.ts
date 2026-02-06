@@ -17,13 +17,13 @@ export enum Mods
 	CASE = '^'
 }
 
-export type Filter = 
+export type Filter =
 {
 	infoType:string
 	info:string
 }
 
-export type Criteria = 
+export type Criteria =
 {
 	mods: Mods[]
 	key: string
@@ -49,7 +49,7 @@ export const parseAdvanceSearch = (input: string, mediaSearch:MediaSearch, clear
 				rule = null;
 			}
 
-			switch(id.toLowerCase())
+			switch(id.toLowerCase() as InfoType)
 			{
 				case InfoType.PATH : rule = {infoType: InfoType.PATH, info: ""}; break;
 				case InfoType.REGEX : rule = {infoType: InfoType.REGEX, info: ""}; break;
@@ -65,7 +65,7 @@ export const parseAdvanceSearch = (input: string, mediaSearch:MediaSearch, clear
 			{
 				rule = {infoType: InfoType.TAG, info: ""};
 			}
-			
+
 			rule.info += " " + part;
 		}
 	}
@@ -87,7 +87,7 @@ export const parseAdvanceSearch = (input: string, mediaSearch:MediaSearch, clear
 	for (let i = 0; i < rules.length; i++)
 	{
 		const item = rules[i];
-		switch(item.infoType)
+		switch(item.infoType as InfoType)
 		{
 			case InfoType.PATH : mediaSearch.path = item.info.trim(); break;
 			case InfoType.REGEX : mediaSearch.regex = item.info.trim(); break;
@@ -101,7 +101,7 @@ export const parseAdvanceSearch = (input: string, mediaSearch:MediaSearch, clear
 export const parseFilterInfo = (filter: string): Criteria[] =>
 {
 	let result: Criteria[] = [];
-	
+
 	if(validString(filter))
 	{
 		const filterItems = filter.split(/[ ,;\n\r]/);
@@ -112,22 +112,22 @@ export const parseFilterInfo = (filter: string): Criteria[] =>
 			let checking = true;
 			while(checking)
 			{
-				switch(current.key[0])
-				{
-					case Mods.EXPLICIT: 
-						current.mods.push(Mods.EXPLICIT);
-						current.key = current.key.substring(1);
-						break;
-					case Mods.NEGATE: 
-						current.mods.push(Mods.NEGATE);
-						current.key = current.key.substring(1);
-						break;
-					case Mods.CASE: 
-						current.mods.push(Mods.CASE);
-						current.key = current.key.substring(1);
-						break;
-					default: checking = false; break;
-				}
+			switch(current.key[0] as Mods)
+			{
+				case Mods.EXPLICIT:
+					current.mods.push(Mods.EXPLICIT);
+					current.key = current.key.substring(1);
+					break;
+				case Mods.NEGATE:
+					current.mods.push(Mods.NEGATE);
+					current.key = current.key.substring(1);
+					break;
+				case Mods.CASE:
+					current.mods.push(Mods.CASE);
+					current.key = current.key.substring(1);
+					break;
+				default: checking = false; break;
+			}
 			}
 
 			if(validString(current.key))

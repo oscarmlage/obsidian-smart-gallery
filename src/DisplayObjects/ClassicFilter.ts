@@ -45,11 +45,10 @@ export class ClassicFilter implements IFilter
 		  attr: { 'aria-label': loc('FILTER_PATH_TOOLTIP'), spellcheck: false, placeholder: loc('FILTER_PATH_PROMPT') }
 		})
 	
-		this.#pathFilterEl.addEventListener('input', async () =>
+		this.#pathFilterEl.addEventListener('input', () =>
 		{
 		  this.#mediaSearch.path = this.#pathFilterEl.value.trim();
-		  await this.updateData();
-		  this.updateDisplay();
+		  void this.updateData().then(() => this.updateDisplay());
 		});
 	
 		// Filter by Name
@@ -59,11 +58,10 @@ export class ClassicFilter implements IFilter
 		  attr: { 'aria-label': loc('FILTER_NAME_TOOLTIP'), spellcheck: false, placeholder: loc('FILTER_NAME_PROMPT') }
 		})
 	
-		this.#nameFilterEl.addEventListener('input', async () =>
+		this.#nameFilterEl.addEventListener('input', () =>
 		{
 		  this.#mediaSearch.name = this.#nameFilterEl.value.trim();
-		  await this.updateData();
-		  this.updateDisplay();
+		  void this.updateData().then(() => this.updateDisplay());
 		});
 	
 		// Sort menu
@@ -89,11 +87,10 @@ export class ClassicFilter implements IFilter
 		  attr: { 'aria-label': loc('FILTER_TAGS_TOOLTIP'), spellcheck: false, placeholder: loc('FILTER_TAGS_PROMPT') }
 		})
 	
-		this.#tagFilterEl.addEventListener('input', async () =>
+		this.#tagFilterEl.addEventListener('input', () =>
 		{
 		  this.#mediaSearch.tag = this.#tagFilterEl.value.trim();
-		  await this.updateData();
-		  this.updateDisplay();
+		  void this.updateData().then(() => this.updateDisplay());
 		});
 	
 		// Filter Match Case
@@ -103,7 +100,7 @@ export class ClassicFilter implements IFilter
 		})
 		setIcon(this.#matchFilterDiv, "case-sensitive")
 	
-		this.#matchFilterDiv.addEventListener('mousedown', async () =>
+		this.#matchFilterDiv.addEventListener('mousedown', () =>
 		{
 		  this.#mediaSearch.matchCase = !this.#mediaSearch.matchCase;
 		  if(this.#mediaSearch.matchCase)
@@ -114,8 +111,7 @@ export class ClassicFilter implements IFilter
 		  {
 			this.#matchFilterDiv.removeClass("icon-checked");
 		  }
-		  await this.updateData();
-		  this.updateDisplay();
+		  void this.updateData().then(() => this.updateDisplay());
 		});
 	
 		// Filter Exclusive or inclusive
@@ -125,7 +121,7 @@ export class ClassicFilter implements IFilter
 		})
 		setIcon(this.#exclusiveFilterDiv, "check-check")
 	
-		this.#exclusiveFilterDiv.addEventListener('mousedown', async () =>
+		this.#exclusiveFilterDiv.addEventListener('mousedown', () =>
 		{
 		  this.#mediaSearch.exclusive = !this.#mediaSearch.exclusive;
 		  if(this.#mediaSearch.exclusive)
@@ -136,8 +132,7 @@ export class ClassicFilter implements IFilter
 		  {
 			this.#exclusiveFilterDiv.removeClass("icon-checked");
 		  }
-		  await this.updateData();
-		  this.updateDisplay();
+		  void this.updateData().then(() => this.updateDisplay());
 		});
 	
 		// image width scaler
@@ -151,53 +146,47 @@ export class ClassicFilter implements IFilter
 		this.#widthScaleEl.min = MIN_IMAGE_WIDTH+"";
 		this.#widthScaleEl.max = (this.#mediaGrid.areaWidth())+"";
 		this.#widthScaleEl.value = this.#mediaSearch.maxWidth+"";
-		this.#widthScaleEl.addEventListener('input', async () =>
+		this.#widthScaleEl.addEventListener('input', () =>
 		{
 		  this.#mediaSearch.maxWidth = parseInt(this.#widthScaleEl.value);
 		  if(this.#mediaGrid.haveColumnsChanged())
 		  {
-			this.updateDisplay();
+			void this.updateDisplay();
 		  }
 		});
 	
 		// Add action button to show random options and randomize them
-		this.#randomDiv = filterBottomDiv.createDiv();
+		this.#randomDiv = filterBottomDiv.createDiv({cls: 'gallery-random-div-hidden'});
 		const randomButton = filterTopDiv.createEl('a', { cls: 'view-action', attr: { 'aria-label': loc('FILTER_RANDOM_TOOLTIP') } })
 		setIcon(randomButton, 'dice')
-		this.#randomDiv.style.display = "none";
-		this.#randomDiv.style.marginLeft= "auto";
 		this.#randomEl = this.#randomDiv.createEl('input', {
-		  cls: 'ob-gallery-filter-input',
+		  cls: 'ob-gallery-filter-input gallery-random-input',
 		  type: 'number',
 		  attr: { 'aria-label': loc('FILTER_RANDOM_COUNT_TOOLTIP'), min:"1", value: "10" }
 		})
-		this.#randomEl.style.marginLeft= "auto";
-		this.#randomEl.addEventListener("focus", async ()=>{
-		  await this.updateData();
-		  this.updateDisplay();
+		this.#randomEl.addEventListener("focus", ()=>{
+		  void this.updateData().then(() => this.updateDisplay());
 		})
-		this.#randomEl.addEventListener("input", async ()=>{
+		this.#randomEl.addEventListener("input", ()=>{
 		  this.#mediaSearch.random = parseInt(this.#randomEl.value);
-		  await this.updateData();
-		  this.updateDisplay();
+		  void this.updateData().then(() => this.updateDisplay());
 		})
 	
-		randomButton.onClickEvent(async () =>
+		randomButton.onClickEvent(() =>
 		{
-		  const currentMode = this.#randomDiv.style.getPropertyValue('display')
-		  if (currentMode === 'block')
+		  if (this.#randomDiv.hasClass('gallery-random-div-visible'))
 		  {
-			this.#randomDiv.style.setProperty('display', 'none')
+			this.#randomDiv.removeClass('gallery-random-div-visible');
+			this.#randomDiv.addClass('gallery-random-div-hidden');
 			this.#mediaSearch.random = 0;
 			this.#mediaSearch.customList = [];
-			await this.updateData();
-			this.updateDisplay();
+			void this.updateData().then(() => this.updateDisplay());
 			return;
 		  }
-		  this.#randomDiv.style.setProperty('display', 'block')
+		  this.#randomDiv.removeClass('gallery-random-div-hidden');
+		  this.#randomDiv.addClass('gallery-random-div-visible');
 		  this.#mediaSearch.random = parseInt(this.#randomEl.value);
-		  await this.updateData();
-		  this.updateDisplay();
+		  void this.updateData().then(() => this.updateDisplay());
 		});
 	}
 
@@ -227,11 +216,13 @@ export class ClassicFilter implements IFilter
 		if(this.#mediaSearch.random > 0)
 		{
 		  this.#randomEl.value = this.#mediaSearch.random+"";
-		  this.#randomDiv.style.setProperty('display', 'block');
+		  this.#randomDiv.removeClass('gallery-random-div-hidden');
+		  this.#randomDiv.addClass('gallery-random-div-visible');
 		}
 		else
 		{
-			this.#randomDiv.style.setProperty('display', 'none');
+			this.#randomDiv.removeClass('gallery-random-div-visible');
+			this.#randomDiv.addClass('gallery-random-div-hidden');
 		}
 	}
 

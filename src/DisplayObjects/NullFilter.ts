@@ -21,7 +21,7 @@ export class NullFilter implements IFilter
 		this.#mediaSearch = mediaSearch;
 		this.#mediaGrid = mediaGrid;
 
-		this.containerEl.style.setProperty('display', 'none');
+		this.containerEl.addClass('ob-gallery-filter-hidden');
 	}
 	filterFill(): void
 	{

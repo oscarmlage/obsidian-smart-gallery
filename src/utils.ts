@@ -88,24 +88,24 @@ export const validString = (original: string, minLength:number = 0): boolean =>
 }
 
 /**
- * Open the search window to a query. 
+ * Open the search window to a query.
  * !!!This uses unsafe internal references and may break at any time!!!
  * @param someSearchQuery text of the query
  * @param app ref to the app
  */
-export const getSearch = async (someSearchQuery: string, app: App) : Promise<void> => {
-  //@ts-ignore
-  app.internalPlugins.getPluginById('global-search').instance.openGlobalSearch(someSearchQuery);
+export const getSearch = (someSearchQuery: string, app: App): void => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  (app as any).internalPlugins.getPluginById('global-search').instance.openGlobalSearch(someSearchQuery);
 }
 
 /**
  * Figures out if the element is partially offscreen
  * @param el element to check
- * @returns 
+ * @returns
  */
-export const offScreenPartial = function(el:HTMLElement) : boolean 
+export const offScreenPartial = function(el:HTMLElement) : boolean
 {
-  var rect = el.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
   const a = (rect.x + rect.width) > window.innerWidth
   const b = (rect.y + rect.height) > window.innerHeight
   const c = rect.x < 0
@@ -116,10 +116,10 @@ export const offScreenPartial = function(el:HTMLElement) : boolean
 /**
  * Figures out if the element is partially offscreen
  * @param el element to check
- * @returns 
+ * @returns
  */
 export const screenOffset = function(el:HTMLElement) : [number,number] {
-  var rect = el.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
   let x = 0;
   let y = 0;
   const a = (rect.x + rect.width) - window.innerWidth
@@ -136,7 +136,6 @@ export const screenOffset = function(el:HTMLElement) : [number,number] {
   {
     x = -rect.x;
   }
-  const d = rect.y < 0
   if(rect.y < 0)
   {
     y = -rect.y;
@@ -145,11 +144,11 @@ export const screenOffset = function(el:HTMLElement) : [number,number] {
 };
 
 export const offscreenFull = function(el:HTMLElement) : boolean {
-  var rect = el.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
   return (
-           (rect.x + rect.width) < 0 
+           (rect.x + rect.width) < 0
              || (rect.y + rect.height) < 0
-             || (rect.x > window.innerWidth 
+             || (rect.x > window.innerWidth
               || rect.y > window.innerHeight)
          );
 };
@@ -167,13 +166,12 @@ export const getImageInfo = async (imgPath:string, create:boolean, plugin: Galle
   {
     return null;
   }
-  
+
   if(!validString(imgPath))
   {
     return null;
   }
 
-  let remote = false;
   if(imgPath.contains("app://") || imgPath.contains("http://localhost"))
   {
     imgPath = plugin.getImgResources()[imgPath];
@@ -185,12 +183,12 @@ export const getImageInfo = async (imgPath:string, create:boolean, plugin: Galle
       return;
     }
   }
-  else if(imgPath.contains("http://") || imgPath.contains("https://"))
-  {
-    remote = true;
-    //return null;
-  }
-  
+  // Remote URLs are supported but we don't use the remote flag currently
+  // else if(imgPath.contains("http://") || imgPath.contains("https://"))
+  // {
+  //   // remote = true;
+  // }
+
   let infoFile = null
   let infoPath = plugin.getMetaResources()[imgPath];
   infoFile = plugin.app.vault.getAbstractFileByPath(infoPath);
@@ -199,21 +197,21 @@ export const getImageInfo = async (imgPath:string, create:boolean, plugin: Galle
   {
     return infoFile;
   }
-  
+
   if (create)
   {
     infoFile = await createMetaFile(imgPath, plugin);
     plugin.getMetaResources()[imgPath] = infoFile.path
     return infoFile;
   }
-  
+
   // Not found, don't create
   return null
 }
 
 
 export const createMetaFile = async (imgPath:string,plugin:GalleryTagsPlugin): Promise<TFile> =>
-{      
+{
   // Info File does not exist, Create it
   let counter = 1
   const imgName = imgPath.split('/').slice(-1)[0]
@@ -232,7 +230,7 @@ export const createMetaFile = async (imgPath:string,plugin:GalleryTagsPlugin): P
     counter++;
   }
 
-  
+
   const templateTFile = plugin.app.vault.getAbstractFileByPath(normalizePath(plugin.settings.imgmetaTemplatePath+".md"));
   let template = DEFAULT_TEMPLATE;
   if(templateTFile instanceof TFile)
@@ -246,7 +244,8 @@ export const createMetaFile = async (imgPath:string,plugin:GalleryTagsPlugin): P
   {
     return await plugin.app.vault.create(filepath, initializeInfo(template, imgPath, imgName));
   }
-  catch(e)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  catch(_e)
   {
     infoFile = plugin.app.vault.getAbstractFileByPath(filepath);
     if(infoFile instanceof TFile)
@@ -266,15 +265,19 @@ export const getimageLink = async (info: TFile, plugin: GalleryTagsPlugin) : Pro
   if (info instanceof TFile)
   {
     const fileCache = plugin.app.metadataCache.getFileCache(info)
-    if(fileCache.frontmatter && fileCache.frontmatter.targetImage && fileCache.frontmatter.targetImage.length > 0)
+    const frontmatter = fileCache?.frontmatter;
+    const targetImage = frontmatter?.targetImage as string | undefined;
+    if(targetImage && targetImage.length > 0)
     {
-      imgLink = fileCache.frontmatter.targetImage
+      imgLink = targetImage
     }
     else
     {
       // find the info block and get the text from there
       const cache = plugin.app.metadataCache.getFileCache(info);
-      if(cache.frontmatter && !(cache.frontmatter.targetImage && cache.frontmatter.targetImage.length > 0))
+      const cacheFrontmatter = cache?.frontmatter;
+      const cacheTargetImage = cacheFrontmatter?.targetImage as string | undefined;
+      if(cacheFrontmatter && !(cacheTargetImage && cacheTargetImage.length > 0))
       {
         const infoContent = await plugin.app.vault.read(info);
         const match = /img(P,p)ath=.+/.exec(infoContent)
@@ -282,10 +285,10 @@ export const getimageLink = async (info: TFile, plugin: GalleryTagsPlugin) : Pro
         {
           imgLink = match[0].trim().substring(8);
           imgLink = normalizePath(imgLink);
-  
-          await plugin.app.fileManager.processFrontMatter(info, async (frontmatter) => 
+
+          void plugin.app.fileManager.processFrontMatter(info, (fm) =>
           {
-            frontmatter.targetImage = imgLink;
+            (fm as Record<string, unknown>).targetImage = imgLink;
           });
         }
       }
@@ -314,16 +317,18 @@ export const addRemoteMeta = async (imgPath: string, infoTFile: TFile, plugin: G
   {
     return false;
   }
-  
-  const shouldLink = !(data.frontmatter && data.frontmatter.targetImage && data.frontmatter.targetImage.length > 0)
+
+  const frontmatter = data.frontmatter;
+  const targetImage = frontmatter?.targetImage as string | undefined;
+  const shouldLink = !(targetImage && targetImage.length > 0)
 
   if(shouldLink)
   {
-    await plugin.app.fileManager.processFrontMatter(infoTFile, async (frontmatter) => 
+    void plugin.app.fileManager.processFrontMatter(infoTFile, (fm) =>
     {
       if(shouldLink)
       {
-        frontmatter.targetImage = imgPath;
+        (fm as Record<string, unknown>).targetImage = imgPath;
       }
     });
     return true;
@@ -347,15 +352,20 @@ export const addEmbededTags = async (imgTFile: TFile, infoTFile: TFile, plugin: 
     return false;
   }
 
-  if(!plugin.settings.skipMetadataOverwrite || !(data.frontmatter && data.frontmatter.tags && data.frontmatter.tags.length > 0 ))
+  const frontmatter = data.frontmatter;
+  const existingTags = frontmatter?.tags as string[] | undefined;
+  const existingPalette = frontmatter?.Palette as string[] | undefined;
+  const existingTargetImage = frontmatter?.targetImage as string | undefined;
+
+  if(!plugin.settings.skipMetadataOverwrite || !(existingTags && existingTags.length > 0))
   {
     keywords = await getJpgTags(imgTFile, plugin);
   }
-  const shouldColor =(!imgTFile.path.match(VIDEO_REGEX) 
+  const shouldColor =(!imgTFile.path.match(VIDEO_REGEX)
   && Platform.isDesktopApp
-  && !(data.frontmatter && data.frontmatter.Palette && data.frontmatter.Palette.length > 0))
-  
-  const shouldLink = !(data.frontmatter && data.frontmatter.targetImage && data.frontmatter.targetImage.length > 0)
+  && !(existingPalette && existingPalette.length > 0))
+
+  const shouldLink = !(existingTargetImage && existingTargetImage.length > 0)
   let colors: string[] = []
 
   if(shouldColor)
@@ -364,7 +374,7 @@ export const addEmbededTags = async (imgTFile: TFile, infoTFile: TFile, plugin: 
     measureEl.src = plugin.app.vault.getResourcePath(imgTFile);
 
     const colorstemp = await extractColors(measureEl, EXTRACT_COLORS_OPTIONS)
-    for (let i = 0; i < colorstemp.length; i++) 
+    for (let i = 0; i < colorstemp.length; i++)
     {
       colors.push(colorstemp[i].hex);
     }
@@ -372,11 +382,12 @@ export const addEmbededTags = async (imgTFile: TFile, infoTFile: TFile, plugin: 
 
   if(shouldLink || keywords || shouldColor)
   {
-    await plugin.app.fileManager.processFrontMatter(infoTFile, async (frontmatter) => 
+    void plugin.app.fileManager.processFrontMatter(infoTFile, (fm) =>
     {
+      const fmRecord = fm as Record<string, unknown>;
       if(shouldLink)
       {
-        frontmatter.targetImage = imgTFile.path;
+        fmRecord.targetImage = imgTFile.path;
       }
 
       if(keywords)
@@ -390,10 +401,10 @@ export const addEmbededTags = async (imgTFile: TFile, infoTFile: TFile, plugin: 
         {
           field = 'tags';
         }
-        
+
         let tags = getTags(data, field);
         let newTags = false;
-        for (let i = 0; i < keywords.length; i++) 
+        for (let i = 0; i < keywords.length; i++)
         {
           const tag = keywords[i].trim();
           if(!validString(tag))
@@ -404,29 +415,29 @@ export const addEmbededTags = async (imgTFile: TFile, infoTFile: TFile, plugin: 
           {
             continue;
           }
-          
+
           newTags = true;
           tags.push(tag);
         }
 
         if(newTags)
         {
-          setTags(frontmatter, tags, field);
-          frontmatter.tags = tags;
+          setTags(fm as FrontMatterCache, tags, field);
+          fmRecord.tags = tags;
         }
       }
-      
+
       // Get image colors
       if (shouldColor)
       {
         const hexList: string[] = [];
-        
+
         for(let i = 0; i < colors.length; i++)
         {
           hexList.push(colors[i]);
         }
-        
-        frontmatter.Palette = hexList;
+
+        fmRecord.Palette = hexList;
       }
     });
     return true;
@@ -437,12 +448,12 @@ export const addEmbededTags = async (imgTFile: TFile, infoTFile: TFile, plugin: 
 
 export const addTag = async (imageInfo:TFile, tag:string, plugin:GalleryTagsPlugin, field:string = 'tags' ): Promise<void> =>
 {
-  await plugin.app.fileManager.processFrontMatter(imageInfo, (frontmatter) => 
+  await plugin.app.fileManager.processFrontMatter(imageInfo, (fm) =>
   {
-    let tags = getFrontTags(frontmatter, field);
-    if (!Array.isArray(tags)) 
-    { 
-      tags = [tags]; 
+    let tags = getFrontTags(fm as FrontMatterCache, field);
+    if (!Array.isArray(tags))
+    {
+      tags = [tags];
     }
 
     if(tags.contains(tag))
@@ -451,18 +462,18 @@ export const addTag = async (imageInfo:TFile, tag:string, plugin:GalleryTagsPlug
     }
 
     tags.push(tag);
-    setTags(frontmatter, tags, field);
+    setTags(fm as FrontMatterCache, tags, field);
   });
 }
 
 export const removeTag = async (imageInfo:TFile, tag:string, plugin:GalleryTagsPlugin, field:string = 'tags' ): Promise<void> =>
 {
-  await plugin.app.fileManager.processFrontMatter(imageInfo, frontmatter => 
+  await plugin.app.fileManager.processFrontMatter(imageInfo, (fm) =>
   {
-    let tags = getFrontTags(frontmatter, field);
-    if (!Array.isArray(tags)) 
-    { 
-      tags = [tags]; 
+    let tags = getFrontTags(fm as FrontMatterCache, field);
+    if (!Array.isArray(tags))
+    {
+      tags = [tags];
     }
 
     let change = false;
@@ -487,7 +498,7 @@ export const removeTag = async (imageInfo:TFile, tag:string, plugin:GalleryTagsP
 
     if(change)
     {
-      setTags(frontmatter, tags, field);
+      setTags(fm as FrontMatterCache, tags, field);
     }
   });
 }
@@ -495,21 +506,21 @@ export const removeTag = async (imageInfo:TFile, tag:string, plugin:GalleryTagsP
 const getFrontTags = (frontmatter:FrontMatterCache, field:string = 'tags'): string[] =>
 {
   let tags:string[]
-  let found;
   if(!validString(field))
   {
     return tags;
   }
 
-  found = frontmatter[field] ?? []
+  const found = (frontmatter as Record<string, unknown>)[field] ?? [];
 
-  if (!Array.isArray(found)) 
-  { 
-    tags = [found]; 
+  if (!Array.isArray(found))
+  {
+    const stringValue = typeof found === 'object' && found !== null ? JSON.stringify(found) : String(found as string | number | boolean);
+    tags = [stringValue];
   }
   else
   {
-    tags = found;
+    tags = found as string[];
   }
 
   return tags;
@@ -518,12 +529,12 @@ const getFrontTags = (frontmatter:FrontMatterCache, field:string = 'tags'): stri
 export const getTags = (metaCache:CachedMetadata, field:string = 'tags'): string[] =>
 {
   let tags:string[]
-  let found;
   if(!validString(field))
   {
     return tags;
   }
 
+  let found: unknown;
   if(field == 'tags')
   {
     found = getAllTags(metaCache)
@@ -532,7 +543,7 @@ export const getTags = (metaCache:CachedMetadata, field:string = 'tags'): string
   {
     if(metaCache.frontmatter)
     {
-      found = metaCache.frontmatter[field] ?? [];
+      found = (metaCache.frontmatter as Record<string, unknown>)[field] ?? [];
     }
     else
     {
@@ -540,13 +551,14 @@ export const getTags = (metaCache:CachedMetadata, field:string = 'tags'): string
     }
   }
 
-  if (!Array.isArray(found)) 
-  { 
-    tags = [found]; 
+  if (!Array.isArray(found))
+  {
+    const stringValue = typeof found === 'object' && found !== null ? JSON.stringify(found) : String(found as string | number | boolean);
+    tags = [stringValue];
   }
   else
   {
-    tags = found;
+    tags = found as string[];
   }
 
   return tags;
@@ -579,7 +591,7 @@ const getJpgTags = async (imgTFile: TFile, plugin: GalleryTagsPlugin): Promise<s
     const parser = ExifParserFactory.create(bits);
     tagInfo = parser.parse();
   }
-  catch(e: any)
+  catch(e: unknown)
   {
     if(e instanceof Error)
     {
@@ -587,7 +599,8 @@ const getJpgTags = async (imgTFile: TFile, plugin: GalleryTagsPlugin): Promise<s
     }
     else
     {
-      new Notice(e)
+      const errorMsg = typeof e === 'object' && e !== null ? JSON.stringify(e) : String(e as string | number | boolean);
+      new Notice(errorMsg)
     }
   }
 
@@ -599,9 +612,8 @@ const getJpgTags = async (imgTFile: TFile, plugin: GalleryTagsPlugin): Promise<s
   let found = ""
   if(Array.isArray(tagInfo.tags.XPKeywords) )
   {
-    var enc = new TextDecoder("utf-8");
-    //@ts-ignore
-    const tagbinary = new Uint8Array(tagInfo.tags.XPKeywords).buffer
+    const enc = new TextDecoder("utf-8");
+    const tagbinary = new Uint8Array(tagInfo.tags.XPKeywords as number[]).buffer
     found = enc.decode(tagbinary)
   }
   else
@@ -611,9 +623,8 @@ const getJpgTags = async (imgTFile: TFile, plugin: GalleryTagsPlugin): Promise<s
 
   if(found.contains("\0"))
   {
-    var enc = new TextDecoder("utf-16");
-    //@ts-ignore
-    const tagbinary = new Uint16Array(tagInfo.tags.XPKeywords).buffer
+    const enc = new TextDecoder("utf-16");
+    const tagbinary = new Uint16Array(tagInfo.tags.XPKeywords as unknown as number[]).buffer
     found = enc.decode(tagbinary)
   }
 
@@ -650,24 +661,24 @@ export const searchForFile = async (path: string, plugin: GalleryTagsPlugin): Pr
   return foundPaths;
 }
 
-export const setLazyLoading = () =>
+export const setLazyLoading = (): void =>
 {
-  const lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
-  let options = {
+  const lazyImages = [].slice.call(document.querySelectorAll("img.lazy")) as HTMLImageElement[];
+  const options = {
     root: document.querySelector("ob-gallery-display"),
     // rootMargin: "0px",
     // threshold: 1.0,
   };
   if ("IntersectionObserver" in window) {
-    let lazyImageObserver = new IntersectionObserver(function(entries, observer) 
+    const lazyImageObserver = new IntersectionObserver(function(entries, observer)
     {
-      entries.forEach(function(entry) 
+      entries.forEach(function(entry)
       {
-        if (entry.isIntersecting) 
+        if (entry.isIntersecting)
         {
           if(entry.target instanceof HTMLImageElement)
           {
-            entry.target.src = entry.target.dataset.src;
+            entry.target.src = entry.target.dataset.src ?? '';
             entry.target.classList.remove("lazy");
             observer.unobserve(entry.target);
           }
@@ -688,9 +699,11 @@ export const updateFocus = (imgEl: HTMLImageElement, videoEl: HTMLVideoElement, 
   if (isVideo)
   {
     // hide focus image div
-    imgEl.style.setProperty('display', 'none')
+    imgEl.addClass('gallery-focus-hidden')
+    imgEl.removeClass('gallery-focus-visible')
     // Show focus video div
-    videoEl.style.setProperty('display', 'block')
+    videoEl.removeClass('gallery-focus-hidden')
+    videoEl.addClass('gallery-focus-visible')
     // Clear Focus image
     imgEl.src = ''
     // Set focus video
@@ -699,9 +712,11 @@ export const updateFocus = (imgEl: HTMLImageElement, videoEl: HTMLVideoElement, 
   }
 
   // Show focus image div
-  imgEl.style.setProperty('display', 'block')
+  imgEl.removeClass('gallery-focus-hidden')
+  imgEl.addClass('gallery-focus-visible')
   // Hide focus video div
-  videoEl.style.setProperty('display', 'none')
+  videoEl.addClass('gallery-focus-hidden')
+  videoEl.removeClass('gallery-focus-visible')
   // Clear Focus video
   videoEl.src = ''
   // Set focus image
@@ -714,6 +729,6 @@ export const ToastMessage = (msg: string, timeoutInSeconds = 10, contextMenuCall
 {
   const additionalInfo = contextMenuCallback  ?  (Platform.isDesktop ? loc('TOAST_ADDITIONAL_CONTEXT', loc(contextKey)) : loc('TOAST_ADDITIONAL')) : "";
   const newNotice: Notice = new Notice(`${loc('PLUGIN_NAME')}\n${msg}\n${additionalInfo}`, timeoutInSeconds*1000);
-  //@ts-ignore
-  if(contextMenuCallback) newNotice.noticeEl.oncontextmenu = async () => { contextMenuCallback() };    
+  //@ts-ignore - messageEl is the correct API but types may not be updated
+  if(contextMenuCallback) newNotice.messageEl.oncontextmenu = () => { contextMenuCallback() };
 }

@@ -31,6 +31,15 @@
     padding: 10px;
 }
 
+.ob-gallery-filter-hidden {
+    display: none;
+}
+
+.ob-gallery-view-content {
+    padding: 0px;
+    overflow: hidden;
+}
+
 .ob-gallery-filter-slider-input{
     width: 125px !important;
     left: 5px;
@@ -331,4 +340,81 @@
 
 .selected-item {
     border: 5px solid var(--interactive-accent);
+}
+
+/* ClassicFilter random div styles */
+.gallery-random-div-hidden {
+    display: none;
+    margin-left: auto;
+}
+
+.gallery-random-div-visible {
+    display: block;
+    margin-left: auto;
+}
+
+.gallery-random-input {
+    margin-left: auto;
+}
+
+/* Gallery info paging links */
+.gallery-info-paging-link {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+/* Focus element visibility */
+.gallery-focus-hidden {
+    display: none;
+}
+
+.gallery-focus-visible {
+    display: block;
+}
+
+.gallery-image-focus-active {
+    display: block;
+}
+
+/* GrammarFilter container */
+.gallery-filter-container {
+    display: flex;
+}
+
+/* SuggestionDropdown scroll container */
+.suggestions-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* MenuPopup styles */
+.menu-popup-options-area {
+    width: 200px;
+    overflow-y: auto;
+}
+
+.menu-popup-break-word {
+    overflow-wrap: break-word;
+}
+
+/* SuggestionPopup input */
+.suggestion-popup-input {
+    width: 100%;
+}
+
+/* ProgressPopup styles */
+.progress-popup-bar {
+    height: 25px;
+    width: 100%;
+    background-color: #333;
+}
+
+.progress-popup-fill {
+    height: 100%;
+    width: 0%;
+}
+
+/* Settings styles */
+.gallery-settings-textarea {
+    width: 100%;
 }

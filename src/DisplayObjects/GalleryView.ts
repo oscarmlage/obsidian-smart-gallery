@@ -41,13 +41,12 @@ export class GalleryView extends ItemView
 
     if(!this.viewEl) return;
     
-    this.viewEl.style.setProperty('padding', '0px')
-    this.viewEl.style.setProperty('overflow', 'hidden')
+    this.viewEl.addClass('ob-gallery-view-content')
     
     const viewActionsEl = this.containerEl.querySelector('.view-actions');
 
     // Create Search Control Element
-    this.filterEl = this.viewEl.createDiv({ cls: 'ob-gallery-filter', attr: { style: 'display: none;' } })
+    this.filterEl = this.viewEl.createDiv({ cls: 'ob-gallery-filter ob-gallery-filter-hidden' })
 
     // Add button to open the filter menu
     const filterButton = viewActionsEl?.createEl('a', { cls: 'view-action', attr: { 'aria-label': loc('FILTER_TOOLTIP') } })
@@ -79,10 +78,10 @@ export class GalleryView extends ItemView
       infoToggle.addClass("icon-checked");
     }
 
-		infoToggle.addEventListener('click', async (event) =>
+		infoToggle.addEventListener('click', (event) =>
 		{
       plugin.platformSettings().rightClickInfoGallery = !plugin.platformSettings().rightClickInfoGallery;
-      await this.plugin.saveSettings();
+      void this.plugin.saveSettings();
 
 		  if(plugin.platformSettings().rightClickInfoGallery)
 		  {
@@ -148,20 +147,20 @@ export class GalleryView extends ItemView
 			}
 		}
     
-		super.setState(state, result);
+		await super.setState(state, result);
 	}
 
   onResize(): void
   {
     this.filter.onResize();
-    this.filter.updateDisplay();
+    void this.filter.updateDisplay();
   }
 
   setFilter(filter:FilterType)
   {
 		this.filterEl.empty();
     this.filterType = filter;
-    this.filterEl.style.setProperty('display', 'block');
+    this.filterEl.removeClass('ob-gallery-filter-hidden');
 
     switch(filter)
     {
@@ -204,7 +203,7 @@ export class GalleryView extends ItemView
     // Add listener to change active file
     this.mediaGrid.setupClickEvents();
 
-    this.loadResults();
+    void this.loadResults();
   }
 
   async loadResults()

@@ -11,7 +11,7 @@ import
 } from '../utils'
 import
 {
-  EXTENSIONS, 
+  EXTENSIONS,
   EXTRACT_COLORS_OPTIONS,
   VIDEO_REGEX,
 } from '../TechnicalFiles/Constants'
@@ -33,7 +33,7 @@ export class ImageInfoBlock
       imgPath: '',
       ignoreInfo: ''
     };
-    
+
     if(!(await plugin.strapped()))
     {
       return;
@@ -79,10 +79,10 @@ export class ImageInfoBlock
       // Handle problematic arg
       if(!args.imgPath)
       {
-        MarkdownRenderer.render(plugin.app, loc('GALLERY_INFO_USAGE'), elCanvas, '/', plugin)
+        void MarkdownRenderer.render(plugin.app, loc('GALLERY_INFO_USAGE'), elCanvas, '/', null)
         return;
       }
-      
+
       const mightFile = plugin.app.vault.getAbstractFileByPath(args.imgPath);
       if (!(mightFile instanceof TFile))
       {
@@ -90,7 +90,7 @@ export class ImageInfoBlock
 
         if(found.length == 0)
         {
-          MarkdownRenderer.render(plugin.app,loc('GALLERY_INFO_USAGE'), elCanvas, '/', plugin)
+          void MarkdownRenderer.render(plugin.app, loc('GALLERY_INFO_USAGE'), elCanvas, '/', null)
           return;
         }
         else
@@ -101,8 +101,8 @@ export class ImageInfoBlock
           {
             output += "- imgPath="+found[i]+"\n";
           }
-          
-          MarkdownRenderer.render(plugin.app, output, elCanvas, '/', plugin)
+
+          void MarkdownRenderer.render(plugin.app, output, elCanvas, '/', null)
           return;
         }
       }
@@ -119,7 +119,7 @@ export class ImageInfoBlock
         imgURL = plugin.app.vault.getResourcePath(imgTFile)
       }
     }
-    
+
     const imgName = args.imgPath.split('/').slice(-1)[0];
 
     let measureEl, isVideo
@@ -130,22 +130,22 @@ export class ImageInfoBlock
       measureEl = document.createElement('video')
       measureEl.src = imgURL
       isVideo = true
-    } 
+    }
     else
     {
       measureEl = new Image()
       measureEl.src = imgURL;
-      
+
       if(Platform.isDesktopApp && imgTFile)
       {
         let colors = await extractColors(measureEl, EXTRACT_COLORS_OPTIONS)
-        
+
         for(let i = 0; i < colors.length; i++)
         {
           hexList.push(colors[i].hex);
         }
       }
-      
+
       isVideo = false
     }
 
@@ -162,13 +162,13 @@ export class ImageInfoBlock
     {
       imgInfoCache = plugin.app.metadataCache.getFileCache(imgInfo)
     }
-    
+
     if (imgInfoCache)
     {
       imgTags = getTags(imgInfoCache);
 
 		  const propertyList = Object.keys(plugin.settings.autoCompleteFields);
-      for (let i = 0; i < propertyList.length; i++) 
+      for (let i = 0; i < propertyList.length; i++)
       {
         if(plugin.settings.autoCompleteFields[propertyList[i]])
         {
@@ -179,15 +179,15 @@ export class ImageInfoBlock
       // get paging info if there is any
       if(imgInfoCache.frontmatter)
       {
-        if(imgInfoCache.frontmatter.start)
+        if(imgInfoCache.frontmatter.start && typeof imgInfoCache.frontmatter.start === 'string')
         {
           start = imgInfoCache.frontmatter.start.trim();
         }
-        if(imgInfoCache.frontmatter.prev)
+        if(imgInfoCache.frontmatter.prev && typeof imgInfoCache.frontmatter.prev === 'string')
         {
           prev = imgInfoCache.frontmatter.prev.trim();
         }
-        if(imgInfoCache.frontmatter.next)
+        if(imgInfoCache.frontmatter.next && typeof imgInfoCache.frontmatter.next === 'string')
         {
           next = imgInfoCache.frontmatter.next.trim();
         }
@@ -198,13 +198,14 @@ export class ImageInfoBlock
       {
         if(!(imgInfoCache.frontmatter?.Palette))
         {
-          await plugin.app.fileManager.processFrontMatter(imgInfo, frontmatter => 
+          await plugin.app.fileManager.processFrontMatter(imgInfo, frontmatter =>
           {
-            if (frontmatter.Palette && frontmatter.Palette.length > 0) 
-            { 
+            const fm = frontmatter as Record<string, unknown>;
+            if (Array.isArray(fm.Palette) && fm.Palette.length > 0)
+            {
               return;
             }
-            frontmatter.Palette = hexList
+            fm.Palette = hexList
           });
         }
       }
@@ -213,10 +214,10 @@ export class ImageInfoBlock
     const imgLinks: Array<{path : string, name: string}> = []
     const infoLinks: Array<{path : string, name: string}> = []
     const mdFiles = plugin.app.vault.getMarkdownFiles()
-    for (let i = 0; i < mdFiles.length; i++) 
+    for (let i = 0; i < mdFiles.length; i++)
     {
       const mdFile = mdFiles[i];
-      
+
       const cache = plugin.app.metadataCache.getFileCache(mdFiles[i])
       if(!cache)
       {
@@ -252,10 +253,10 @@ export class ImageInfoBlock
     if(imgTFile)
     {
       const nearFiles = imgTFile.parent.children;
-      for (let i = 0; i < nearFiles.length; i++) 
+      for (let i = 0; i < nearFiles.length; i++)
       {
         const file = nearFiles[i];
-        
+
         if(file instanceof TFile)
         {
           if(file != imgTFile
@@ -268,12 +269,15 @@ export class ImageInfoBlock
       }
     }
 
-    const frontmatter: FrontMatterCache = imgInfoCache?.frontmatter ?? []
-    
+    const frontmatter: FrontMatterCache = imgInfoCache?.frontmatter ?? {}
+
     if(hexList.length == 0)
     {
-      if(frontmatter["Palette"])
-      hexList = frontmatter["Palette"];
+      const palette = (frontmatter as Record<string, unknown>)["Palette"];
+      if(Array.isArray(palette))
+      {
+        hexList = palette as string[];
+      }
     }
 
     let width, height;
@@ -311,7 +315,7 @@ export class ImageInfoBlock
       info.next = next;
       info.frontmatter = frontmatter;
       info.infoList = infoList;
-      
+
       info.updateDisplay();
     }
   }

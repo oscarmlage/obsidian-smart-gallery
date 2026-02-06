@@ -10,7 +10,7 @@ export class FilterTypeMenu extends MenuPopup
 
 	constructor(posX:number, posY:number, current: FilterType, accentColor: string, onResult: (filterType:FilterType) => void)
 	{
-		super(posX, posY, (result) => {this.#submit(result)});
+		super(posX, posY, (result) => {void this.#submit(result)});
 
 		this.#current = current;
 		this.#accentColor = accentColor;
@@ -32,8 +32,8 @@ export class FilterTypeMenu extends MenuPopup
 		//@ts-ignore
 		const label = loc("FILTER_TYPE_OPTION_"+option);
 		
-		let color: string = null;
-		if(option == this.#current)
+		let color: string | null = null;
+		if(option === this.#current)
 		{
 			color = this.#accentColor;
 		}
