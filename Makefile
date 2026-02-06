@@ -14,9 +14,17 @@ docker-build: ## Build the plugin using Docker
 	docker rm $(CONTAINER_NAME)
 	@echo "Build complete: main.js created"
 
-docker-lint: ## Run linting using Docker
+docker-lint: ## Run svelte-check linting using Docker
 	docker build -t $(IMAGE_NAME) .
 	docker run --rm $(IMAGE_NAME) npm run lint
+
+docker-lint-eslint: ## Run ESLint (Obsidian rules) using Docker
+	docker build -t $(IMAGE_NAME) .
+	docker run --rm $(IMAGE_NAME) npm run lint:eslint
+
+docker-lint-all: ## Run all linting (svelte-check + ESLint) using Docker
+	docker build -t $(IMAGE_NAME) .
+	docker run --rm $(IMAGE_NAME) npm run lint:all
 
 docker-shell: ## Open a shell in the Docker container
 	docker build -t $(IMAGE_NAME) .
@@ -28,8 +36,14 @@ build: ## Build the plugin (requires local Node.js)
 dev: ## Start development mode (requires local Node.js)
 	npm run dev
 
-lint: ## Run linting (requires local Node.js)
+lint: ## Run svelte-check linting (requires local Node.js)
 	npm run lint
+
+lint-eslint: ## Run ESLint with Obsidian rules (requires local Node.js)
+	npm run lint:eslint
+
+lint-all: ## Run all linting (requires local Node.js)
+	npm run lint:all
 
 clean: ## Clean build artifacts
 	rm -f main.js main.js.map

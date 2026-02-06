@@ -21,7 +21,7 @@ RUN npm ci
 
 # Copy source code and config files
 COPY src/ ./src/
-COPY rollup.config.mjs tsconfig.json ./
+COPY rollup.config.mjs tsconfig.json eslint.config.mjs manifest.json ./
 COPY styles.css ./
 
 # Add node_modules/.bin to PATH
