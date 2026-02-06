@@ -4,7 +4,7 @@ This plugin is the result of continuous development across multiple forks. We th
 
 ## Current maintainer
 
-- **Oscar Lage** ([@oscarmlage](https://github.com/oscarmlage)) - Current maintainer of Obsidian Smart Gallery
+- **Oscar Lage** ([@oscarmlage](https://github.com/oscarmlage)) - Current maintainer of Smart Gallery
 
 ## Previous authors
 
@@ -25,7 +25,7 @@ This project is based on the work of:
 Darakah/obsidian-gallery (original)
     └── agreatfool/obsidian-gallery
             └── TomNCatz/obsidian-gallery ("Tagged Gallery")
-                    └── oscarmlage/obsidian-smart-gallery ("Obsidian Smart Gallery")
+                    └── oscarmlage/obsidian-smart-gallery ("Smart Gallery")
 ```
 
 ## License

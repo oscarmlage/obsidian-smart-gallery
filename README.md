@@ -1,4 +1,4 @@
-# Obsidian Smart Gallery
+# Smart Gallery
 ![GitHub release)](https://img.shields.io/github/v/release/oscarmlage/obsidian-smart-gallery)
 ![GitHub all releases](https://img.shields.io/github/downloads/oscarmlage/obsidian-smart-gallery/total)
 

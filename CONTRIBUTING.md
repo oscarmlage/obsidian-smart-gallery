@@ -1,4 +1,4 @@
-# Contributing to Obsidian Smart Gallery
+# Contributing to Smart Gallery
 
 Thank you for your interest in contributing to this project!
 
