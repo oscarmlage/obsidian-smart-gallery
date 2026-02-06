@@ -37,7 +37,7 @@
         "esbuild-svelte": "^0.7.4",
         "jest": "29.6.4",
         "moment": "2.29.4",
-        "rollup": "3.28.1",
+        "rollup": "^3.29.5",
         "rollup-plugin-copy": "latest",
         "rollup-plugin-svelte": "7.1.6",
         "svelte": "^4.2.0",
