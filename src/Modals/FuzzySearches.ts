@@ -1,4 +1,4 @@
-import { FuzzySuggestModal, TFile, TFolder, getAllTags } from "obsidian";
+import { FuzzySuggestModal, TFile, TFolder } from "obsidian";
 import type GalleryTagsPlugin from "../main";
 
 export class FuzzyFolders extends FuzzySuggestModal<TFolder>

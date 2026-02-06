@@ -238,7 +238,7 @@ ignoreInfo:Name;tags;size;backlinks
 ----
 
 Please Check Release Notes for plugin changes:<br>
-https://github.com/TomNCatz/obsidian-gallery#release-notes
+https://github.com/oscarmlage/obsidian-smart-gallery#release-notes
 `,
 
 	GALLERY_DISPLAY_USAGE: `
@@ -263,6 +263,6 @@ random:0
 
 ----
 Full documentation on gallery blocks at:<br>
-https://github.com/TomNCatz/obsidian-gallery/blob/main/docs/READEME_DisplayBlocks.md
+https://github.com/oscarmlage/obsidian-smart-gallery/blob/main/docs/README_DisplayBlocks.md
 `
 }

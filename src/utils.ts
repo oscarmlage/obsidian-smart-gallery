@@ -9,6 +9,12 @@ import type en from './Loc/Languages/en'
 
 export type ImageResources = Record<string, string>
 
+/**
+ * Utility function to delay execution
+ * @param ms - milliseconds to wait
+ */
+export const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
+
 export const scaleColor = (color: string, percent: number) : string =>
 {
   let rcode = color.substring(1,3);
@@ -597,12 +603,10 @@ const getJpgTags = async (imgTFile: TFile, plugin: GalleryTagsPlugin): Promise<s
     //@ts-ignore
     const tagbinary = new Uint8Array(tagInfo.tags.XPKeywords).buffer
     found = enc.decode(tagbinary)
-    //new Notice("utf-8: "+found)
   }
   else
   {
     found = tagInfo.tags.XPKeywords;
-    //new Notice("string: "+found)
   }
 
   if(found.contains("\0"))
@@ -611,13 +615,11 @@ const getJpgTags = async (imgTFile: TFile, plugin: GalleryTagsPlugin): Promise<s
     //@ts-ignore
     const tagbinary = new Uint16Array(tagInfo.tags.XPKeywords).buffer
     found = enc.decode(tagbinary)
-    //new Notice("utf-16: "+found)
   }
 
   if(found.contains("\0"))
   {
     found = found.replaceAll("\0","")
-    //new Notice("utf-32: "+found)
   }
 
   found = found.replaceAll(" ","_")

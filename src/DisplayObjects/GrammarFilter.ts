@@ -5,7 +5,7 @@ import type { MediaSearch } from "../TechnicalFiles/MediaSearch";
 import { setIcon } from "obsidian";
 import { MIN_IMAGE_WIDTH } from "../TechnicalFiles/Constants";
 import type { IFilter } from "../TechnicalFiles/IFilter";
-import { parseAdvanceSearch } from "../TechnicalFiles/GammarParse";
+import { parseAdvanceSearch } from "../TechnicalFiles/GrammarParse";
 
 export class GrammarFilter implements IFilter
 {

@@ -4,7 +4,7 @@ import { MediaSearch } from '../TechnicalFiles/MediaSearch'
 import { MediaGrid } from '../DisplayObjects/MediaGrid'
 import Gallery from '../svelte/Gallery.svelte'
 import { validString } from '../utils'
-import { parseAdvanceSearch } from '../TechnicalFiles/GammarParse'
+import { parseAdvanceSearch } from '../TechnicalFiles/GrammarParse'
 
 export interface GalleryBlockArgs
 {

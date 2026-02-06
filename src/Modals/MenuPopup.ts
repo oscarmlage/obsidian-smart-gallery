@@ -1,4 +1,4 @@
-import { offScreenPartial, screenOffset } from "../utils";
+import { offScreenPartial, screenOffset, sleep } from "../utils";
 
 export class MenuPopup
 {
@@ -20,8 +20,7 @@ export class MenuPopup
 
 		this.#self.addEventListener("blur",async () => 
 		{
-			// TODO: I hate every single one of these, cause it means I'm waiting on something and I don't know what
-			await new Promise(f => setTimeout(f, 100));
+			await sleep(100);
 			this.#cleanUp();
 		});
 

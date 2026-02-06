@@ -4,6 +4,7 @@ import
  {
 	setLazyLoading,
 	updateFocus,
+	sleep,
 } from '../utils'
 import 
 {
@@ -159,7 +160,7 @@ export class MediaGrid
 		setLazyLoading();
 		
 		this.displayEl.scrollTop = scrollPosition;
-		await new Promise(f => setTimeout(f, 100));
+		await sleep(100);
 		this.displayEl.scrollTop = scrollPosition;
 	}
 

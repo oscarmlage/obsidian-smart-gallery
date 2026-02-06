@@ -1,5 +1,5 @@
-import { Plugin, type WorkspaceLeaf, addIcon, Menu, Editor, MarkdownView, type MarkdownFileInfo, MenuItem, Notice, TFile, TFolder, TAbstractFile, Platform } from 'obsidian'
-import { scaleColor, type ImageResources, addEmbededTags, getimageLink, getImageInfo, preprocessUri, ToastMessage, addRemoteMeta, isRemoteMedia, getTags } from './utils'
+import { Plugin, type WorkspaceLeaf, addIcon, Notice, TFile, TFolder, TAbstractFile, Platform } from 'obsidian'
+import { scaleColor, type ImageResources, addEmbededTags, getimageLink, getImageInfo, preprocessUri, ToastMessage, addRemoteMeta, isRemoteMedia, getTags, sleep } from './utils'
 import { GallerySettingTab } from './settings'
 import { GalleryBlock } from './Blocks/GalleryBlock'
 import { ImageInfoBlock } from './Blocks/ImageInfoBlock'
@@ -139,7 +139,7 @@ export default class GalleryTagsPlugin extends Plugin
   {
     while(this.#bootstrapped !== true) 
     {
-      await new Promise(f => setTimeout(f, 300));
+      await sleep(300);
     }
     
     return Promise.resolve(true);
@@ -257,8 +257,7 @@ export default class GalleryTagsPlugin extends Plugin
       {
         this.#imageRegister(file);
 
-        // TODO: I hate every single one of these, cause it means I'm waiting on something and I don't know what
-        await new Promise(f => setTimeout(f, 300));
+        await sleep(300);
 
         const infoFile = await getImageInfo(oldPath, false, this);
 
@@ -280,19 +279,6 @@ export default class GalleryTagsPlugin extends Plugin
         }
       }));
             
-    // this.registerEvent(
-    //   this.app.workspace.on("file-menu", async (menu,editor, info) => 
-    //   {
-    //     new Notice("file Menu")
-    //   }));
-
-		// this.registerEvent(
-		// 	this.app.workspace.on(
-		// 		'editor-menu',
-		// 		this.testOption
-		// 	)
-		// );
-    
     const options =  {capture: true}
     this.register(() => document.off('contextmenu', this.#imgSelector, this.clickImage, options));
     document.on('contextmenu', this.#imgSelector, this.clickImage, options);
@@ -461,19 +447,6 @@ export default class GalleryTagsPlugin extends Plugin
     }
   }
   
-  testOption (menu: Menu, editor: Editor, info: MarkdownView | MarkdownFileInfo)
-  {
-    menu.addItem((item: MenuItem) => 
-    {
-      item.setTitle("Test Option")
-        //.setIcon("plus-circle")
-        //.setSection("cmdr")
-        .onClick(async () => {
-          new Notice("clicked option");
-        });
-    });
-  }
-
   #refreshColors()
   {
 		// @ts-ignore

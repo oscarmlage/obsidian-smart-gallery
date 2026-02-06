@@ -107,7 +107,6 @@ export class SuggestionDropdown
 				}
 				break;
 			default: 
-			// new Notice(e.key)
 			return;
 		}
 
@@ -127,7 +126,6 @@ export class SuggestionDropdown
 			case "Backspace":
 				break;
 			default: 
-			// new Notice(e.key)
 			return;
 		}
 

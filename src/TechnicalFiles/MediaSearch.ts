@@ -1,4 +1,4 @@
-import { normalizePath, getAllTags, TFile, Notice, type CachedMetadata } from "obsidian"
+import { TFile, Notice, type CachedMetadata } from "obsidian"
 import type GalleryTagsPlugin from "../main"
 import
  {
@@ -6,7 +6,7 @@ import
 	getTags,
 	validString
 } from '../utils'
-import { parseFilterInfo, type Criteria, Mods } from '../TechnicalFiles/GammarParse'
+import { parseFilterInfo, type Criteria, Mods } from '../TechnicalFiles/GrammarParse'
 import { loc } from '../Loc/Localizer'
 
 export enum Sorting

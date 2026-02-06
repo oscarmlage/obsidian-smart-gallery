@@ -1,9 +1,8 @@
-import { type FrontMatterCache, TFile, getAllTags, setIcon } from "obsidian"
+import { type FrontMatterCache, TFile, setIcon } from "obsidian"
 import type GalleryTagsPlugin from "../main"
 import { SuggestionDropdown } from "../Modals/SuggestionDropdown"
 import { addTag, getSearch, removeTag, validString } from "../utils"
 import { loc } from '../Loc/Localizer'
-import { basename } from "path"
 
 
 export class GalleryInfo

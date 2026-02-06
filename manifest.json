@@ -1,10 +1,10 @@
 {
-    "id": "tagged-gallery",
-    "name": "Tagged Gallery",
+    "id": "obsidian-smart-gallery",
+    "name": "Obsidian Smart Gallery",
     "version": "1.7.2",
     "minAppVersion": "1.7.0",
     "description": "Main Gallery to tag / filter / add notes to images. Display blocks to embed images inside notes. Display block to an image information",
-    "author": "Tom",
-    "authorUrl": "https://github.com/TomNCatz/",
+    "author": "Oscar Lage",
+    "authorUrl": "https://github.com/oscarmlage/",
     "isDesktopOnly": false
 }

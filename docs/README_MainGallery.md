@@ -10,7 +10,7 @@ The first is the Search bar menu. This controls the visibility and structure of 
 - Hidden : No visiable search bar. Searches that have been entered are still in effect.
 - Simple Filter : This filter has only one field, which is used for tags.
 - Classic Filter : This filter has seperate fields for different search criteria and several options.
-- [Advanced Filter](https://github.com/TomNCatz/obsidian-gallery/blob/main/docs/README_AdvancedSearch.md) : Like simple filter, the advanced filter has a single field, but it has many more things it can be used for
+- [Advanced Filter](https://github.com/oscarmlage/obsidian-smart-gallery/blob/main/docs/README_AdvancedSearch.md) : Like simple filter, the advanced filter has a single field, but it has many more things it can be used for
 
 ## Filter Menu
 The filter menu has several options for managing your current search, and even saving and loading searches

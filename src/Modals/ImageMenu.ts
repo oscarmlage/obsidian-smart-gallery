@@ -1,7 +1,7 @@
 import type { MediaGrid } from "../DisplayObjects/MediaGrid";
 import type { MediaSearch } from "../TechnicalFiles/MediaSearch"
 import type GalleryTagsPlugin from "../main";
-import { addEmbededTags, addTag, createMetaFile, getImageInfo, isRemoteMedia, preprocessUri, removeTag, validString } from "../utils";
+import { addEmbededTags, addTag, createMetaFile, getImageInfo, isRemoteMedia, preprocessUri, removeTag, validString, sleep } from "../utils";
 import { Notice, Platform, TFile } from "obsidian";
 import { GalleryInfoView } from "../DisplayObjects/GalleryInfoView";
 import { FuzzyFolders, FuzzyTags } from "./FuzzySearches";
@@ -329,21 +329,7 @@ export class ImageMenu extends MenuPopup
 		}
 		else
 		{
-			
-			// const share = new Intent(Intent.ACTION_SEND);
-            // share.setType(blob.type);
-
-            // share.putExtra(Intent.EXTRA_SUBJECT, "abc");
-            // share.putExtra(Intent.EXTRA_TITLE, "abcd");
-
-            // const imageFileToShare = new File([blob],blob.name);
-
-            // Uri uri = FileProvider.getUriForFile(Main2Activity.this, "abc.dcf.fileprovider", imageFileToShare);
-
-            // share.putExtra(Intent.EXTRA_STREAM, uri);
-
-            // share.setPackage("com.abc.in");
-            // startActivity(Intent.createChooser(share, "Message"));
+			new Notice(loc('CAN_NOT_SHARE'));
 		}
 	}
 
@@ -821,8 +807,7 @@ export class ImageMenu extends MenuPopup
 			return;
 		}
 
-        // TODO: I hate every single one of these, cause it means I'm waiting on something and I don't know what
-		await new Promise(f => setTimeout(f, 100));
+		await sleep(100);
 
 		await this.#mediaSearch.updateData();
 		await this.#mediaGrid.updateDisplay();

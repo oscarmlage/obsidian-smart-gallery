@@ -31,10 +31,9 @@ export class FilterTypeMenu extends MenuPopup
 	{
 		//@ts-ignore
 		const label = loc("FILTER_TYPE_OPTION_"+option);
-		let filterType : FilterType;
 		
 		let color: string = null;
-		if(filterType == this.#current)
+		if(option == this.#current)
 		{
 			color = this.#accentColor;
 		}

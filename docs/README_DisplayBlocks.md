@@ -29,7 +29,7 @@ The path a folder in your vault that you want to display images from
 ## name 
 Part of the name of the files you want to display
 ## tags
-A set of tags seperated by spaces you want to use in your filter. More specifics can be found [here](https://github.com/TomNCatz/obsidian-gallery/blob/main/docs/README_AdvancedSearch.md)
+A set of tags seperated by spaces you want to use in your filter. More specifics can be found [here](https://github.com/oscarmlage/obsidian-smart-gallery/blob/main/docs/README_AdvancedSearch.md)
 ## frontmatter
 Palette:000000
 filter by custom frontmatter fields. 

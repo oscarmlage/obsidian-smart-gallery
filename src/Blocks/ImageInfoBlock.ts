@@ -1,6 +1,6 @@
 import type { FrontMatterCache } from 'obsidian'
-import { MarkdownRenderer, TFile, getAllTags, Platform, MarkdownView, normalizePath } from 'obsidian'
-import { extractColors } from '../../node_modules/extract-colors'
+import { MarkdownRenderer, TFile, Platform, normalizePath } from 'obsidian'
+import { extractColors } from 'extract-colors'
 import
 {
   getImageInfo,
