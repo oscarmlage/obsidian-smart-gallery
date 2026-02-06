@@ -91,6 +91,14 @@ For a complete list of options, see the [Display Blocks documentation](https://g
 
 ## [Tentative Roadmap](https://github.com/oscarmlage/obsidian-smart-gallery/blob/main/docs/README_Roadmap.md)
 
+## Authors and acknowledgements
 
+See [AUTHORS.md](AUTHORS.md) for the full list of contributors and the fork history of this project.
 
-This is a continuation of developement from Darakah's obsidian-gallery, found here https://github.com/Darakah/obsidian-gallery
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
