@@ -50,9 +50,15 @@ export class GalleryBlock
       if (e)
       {
         const param = e.trim().split(':');
-        if(Object.prototype.hasOwnProperty.call(args, param[0]))
+        const key = param[0] as keyof GalleryBlockArgs;
+        if(Object.prototype.hasOwnProperty.call(args, key))
         {
-          (args as any)[param[0]] = param[1]?.trim()
+          const value = param[1]?.trim();
+          if (key === 'imgWidth' || key === 'imgHeight' || key === 'divWidth' || key === 'divHeight' || key === 'random') {
+            args[key] = parseInt(value) || -1;
+          } else {
+            (args[key] as string) = value;
+          }
         }
         else
         {

@@ -49,6 +49,12 @@ export class MediaSearch
 		this.clearFilter();
 	}
 
+	#getFileByPath(path: string): TFile | null
+	{
+		const file = this.plugin.app.vault.getAbstractFileByPath(path);
+		return file instanceof TFile ? file : null;
+	}
+
 	stringToSort(sort:string)
 	{
 		sort = sort.toLocaleLowerCase();
@@ -103,8 +109,9 @@ export class MediaSearch
 				{
 					this.imgList = this.imgList.sort((a,b)=>
 					{
-						let af = this.plugin.app.vault.getAbstractFileByPath(this.plugin.imgResources[a]) as TFile;
-						let bf = this.plugin.app.vault.getAbstractFileByPath(this.plugin.imgResources[b]) as TFile;
+						const af = this.#getFileByPath(this.plugin.imgResources[a]);
+						const bf = this.#getFileByPath(this.plugin.imgResources[b]);
+						if (!af || !bf) return 0;
 
 						if(af.stat.ctime < bf.stat.ctime)
 						{
@@ -122,19 +129,20 @@ export class MediaSearch
 				{
 					this.imgList = this.imgList.sort((a,b)=>
 					{
-						let ap = this.plugin.metaResources[this.plugin.imgResources[a]];
-						let bp = this.plugin.metaResources[this.plugin.imgResources[b]];
+						const ap = this.plugin.metaResources[this.plugin.imgResources[a]];
+						const bp = this.plugin.metaResources[this.plugin.imgResources[b]];
 
-						let af: TFile = this.plugin.app.vault.getAbstractFileByPath(ap) as TFile;
-						let bf: TFile = this.plugin.app.vault.getAbstractFileByPath(bp) as TFile;
+						let af = this.#getFileByPath(ap);
+						let bf = this.#getFileByPath(bp);
 						if(!af)
 						{
-							af = this.plugin.app.vault.getAbstractFileByPath(this.plugin.imgResources[a]) as TFile;
+							af = this.#getFileByPath(this.plugin.imgResources[a]);
 						}
 						if(!bf)
 						{
-							bf = this.plugin.app.vault.getAbstractFileByPath(this.plugin.imgResources[b]) as TFile;
+							bf = this.#getFileByPath(this.plugin.imgResources[b]);
 						}
+						if (!af || !bf) return 0;
 
 						if(af.stat.mtime < bf.stat.mtime)
 						{
@@ -152,8 +160,9 @@ export class MediaSearch
 				{
 					this.imgList = this.imgList.sort((a,b)=>
 					{
-						let af = this.plugin.app.vault.getAbstractFileByPath(this.plugin.imgResources[a]) as TFile;
-						let bf = this.plugin.app.vault.getAbstractFileByPath(this.plugin.imgResources[b]) as TFile;
+						const af = this.#getFileByPath(this.plugin.imgResources[a]);
+						const bf = this.#getFileByPath(this.plugin.imgResources[b]);
+						if (!af || !bf) return 0;
 
 						if(af.stat.size < bf.stat.size)
 						{
@@ -236,7 +245,7 @@ export class MediaSearch
 			}
 		}
 		
-		console.log(loc('WARN_NO_FILTER_NAME', filter));
+		console.warn(loc('WARN_NO_FILTER_NAME', filter));
 		new Notice(loc('WARN_NO_FILTER_NAME', filter));
 	}
 
@@ -248,7 +257,7 @@ export class MediaSearch
 		}
 		else
 		{
-			console.log(loc('WARN_NO_FILTER_INDEX', index.toString()));
+			console.warn(loc('WARN_NO_FILTER_INDEX', index.toString()));
 			new Notice(loc('WARN_NO_FILTER_INDEX', index.toString()));
 		}
 	}
@@ -458,7 +467,7 @@ export class MediaSearch
 			} 
 			catch (error)
 			{
-				console.log(loc('BAD_REGEX_WARNING'))
+				console.warn(loc('BAD_REGEX_WARNING'))
 			}
 		}
 

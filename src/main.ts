@@ -35,7 +35,7 @@ export default class GalleryTagsPlugin extends Plugin
     this.strapped = this.strapped.bind(this);
     // Load message
     await this.loadSettings();
-    console.log(loc("LOADED_PLUGIN_MESSAGE", loc('PLUGIN_NAME')));
+    console.debug(loc("LOADED_PLUGIN_MESSAGE", loc('PLUGIN_NAME')));
 
     this.#registerCodeBlocks();
 
@@ -460,7 +460,7 @@ export default class GalleryTagsPlugin extends Plugin
 
   onunload()
   {
-    console.log(loc("UNLOADING_PLUGIN_MESSAGE", loc('PLUGIN_NAME')))
+    console.debug(loc("UNLOADING_PLUGIN_MESSAGE", loc('PLUGIN_NAME')))
     
     this.embedQueue = {};
     this.finalizedQueue = {};

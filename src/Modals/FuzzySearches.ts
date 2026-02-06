@@ -8,8 +8,7 @@ export class FuzzyFolders extends FuzzySuggestModal<TFolder>
 	getItems(): TFolder[]
 	{
 		const files = this.app.vault.getAllLoadedFiles()
-		const filtered = files.filter((f) => f instanceof TFolder)
-		return filtered.map((f) => f as TFolder)
+		return files.filter((f): f is TFolder => f instanceof TFolder)
 	}
 	getItemText(item: TFolder): string
 	{
@@ -28,8 +27,7 @@ export class FuzzyFiles extends FuzzySuggestModal<TFile>
 	getItems(): TFile[]
 	{
 		const files = this.app.vault.getAllLoadedFiles()
-		const filtered = files.filter((f) => f instanceof TFile)
-		return filtered.map((f) => f as TFile)
+		return files.filter((f): f is TFile => f instanceof TFile)
 	}
 	getItemText(item: TFile): string
 	{

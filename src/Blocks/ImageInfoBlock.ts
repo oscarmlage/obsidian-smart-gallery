@@ -44,7 +44,10 @@ export class ImageInfoBlock
       if (e)
       {
         const param = e.trim().split('=');
-        (args as any)[param[0]] = param[1]?.trim()
+        const key = param[0] as keyof InfoBlockArgs;
+        if (key === 'imgPath' || key === 'ignoreInfo') {
+          args[key] = param[1]?.trim() ?? '';
+        }
       }
     })
 

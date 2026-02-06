@@ -354,19 +354,19 @@ export class GalleryInfo
 				
 				if (file instanceof TFile)
 				{
-					docLink.addEventListener('click', async (e) =>
+					docLink.addEventListener('click', async () =>
 					{
-						this.plugin.app.workspace.getLeaf(false).openFile(file as TFile);
+						void this.plugin.app.workspace.getLeaf(false).openFile(file);
 					});
 					
-					docLink.addEventListener('auxclick', async (e) =>
+					docLink.addEventListener('auxclick', async () =>
 					{
-						this.plugin.app.workspace.getLeaf(true).openFile(file as TFile);
+						void this.plugin.app.workspace.getLeaf(true).openFile(file);
 					});
 					
-					docLink.addEventListener('contextmenu', async (e) =>
+					docLink.addEventListener('contextmenu', async () =>
 					{
-						this.plugin.app.workspace.getLeaf(true).openFile(file as TFile);
+						void this.plugin.app.workspace.getLeaf(true).openFile(file);
 					});
 				}
 			}

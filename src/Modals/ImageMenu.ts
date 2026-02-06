@@ -287,7 +287,12 @@ export class ImageMenu extends MenuPopup
 			this.#infoView.clear()
 		}
 		
-		const imgFile = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[this.#getSource(this.#targets[0])]) as TFile;
+		const abstractFile = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[this.#getSource(this.#targets[0])]);
+		if (!(abstractFile instanceof TFile)) {
+			new Notice(loc('PLATFORM_COPY_NOT_SUPPORTED'));
+			return;
+		}
+		const imgFile = abstractFile;
 		const response = await requestUrl({ url: this.#getSource(this.#targets[0]) });
 		const blob = new Blob([response.arrayBuffer], { type: response.headers['content-type'] || 'application/octet-stream' });
 
@@ -678,7 +683,11 @@ export class ImageMenu extends MenuPopup
 			},
         	async (newName) =>
 			{
-				const file = this.#plugin.app.vault.getAbstractFileByPath(original) as TFile;
+				const file = this.#plugin.app.vault.getAbstractFileByPath(original);
+				if (!(file instanceof TFile)) {
+					new Notice(loc('CONFLICT_NOTICE_PATH', original));
+					return;
+				}
 				if(!newName.contains(file.extension))
 				{
 					newName += file.extension;
