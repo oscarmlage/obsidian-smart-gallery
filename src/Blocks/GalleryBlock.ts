@@ -50,7 +50,7 @@ export class GalleryBlock
       if (e)
       {
         const param = e.trim().split(':');
-        if(args.hasOwnProperty(param[0]))
+        if(Object.prototype.hasOwnProperty.call(args, param[0]))
         {
           (args as any)[param[0]] = param[1]?.trim()
         }

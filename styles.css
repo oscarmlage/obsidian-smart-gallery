@@ -323,3 +323,12 @@
 .ob-gallery-video-focus {
     user-select: none;
 }
+
+/* Dynamic accent color classes */
+.icon-checked {
+    color: var(--interactive-accent);
+}
+
+.selected-item {
+    border: 5px solid var(--interactive-accent);
+}

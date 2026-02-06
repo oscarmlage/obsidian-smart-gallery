@@ -2,7 +2,7 @@ import type { MediaGrid } from "../DisplayObjects/MediaGrid";
 import type { MediaSearch } from "../TechnicalFiles/MediaSearch"
 import type GalleryTagsPlugin from "../main";
 import { addEmbededTags, addTag, createMetaFile, getImageInfo, isRemoteMedia, preprocessUri, removeTag, validString, sleep } from "../utils";
-import { Notice, Platform, TFile } from "obsidian";
+import { Notice, Platform, TFile, requestUrl } from "obsidian";
 import { GalleryInfoView } from "../DisplayObjects/GalleryInfoView";
 import { FuzzyFolders, FuzzyTags } from "./FuzzySearches";
 import { ConfirmModal } from "./ConfirmPopup";
@@ -10,7 +10,6 @@ import { ProgressModal } from "./ProgressPopup";
 import { loc } from '../Loc/Localizer'
 import { SuggestionPopup } from "./SuggestionPopup";
 import { MenuPopup } from "./MenuPopup";
-import { exec } from "child_process";
 import { CONVERSION_SUPPORT } from "../TechnicalFiles/Constants";
 
 enum Options
@@ -289,8 +288,8 @@ export class ImageMenu extends MenuPopup
 		}
 		
 		const imgFile = this.#plugin.app.vault.getAbstractFileByPath(this.#plugin.getImgResources()[this.#getSource(this.#targets[0])]) as TFile;
-		const result = await fetch(this.#getSource(this.#targets[0]));
-		const blob = await result.blob();
+		const response = await requestUrl({ url: this.#getSource(this.#targets[0]) });
+		const blob = new Blob([response.arrayBuffer], { type: response.headers['content-type'] || 'application/octet-stream' });
 
 		if(navigator.canShare)
 		{
@@ -349,45 +348,20 @@ export class ImageMenu extends MenuPopup
 		}
 		else
 		{
-			let path = this.#plugin.getImgResources()[this.#getSource(this.#targets[0])];
-			//@ts-ignore
-			path = this.#plugin.app.vault.adapter.getFullRealPath(path)
-			let command = null;
-			if(Platform.isWin)
+			// Fallback: try to fetch the image and copy as blob
+			try
 			{
-				path = path.replaceAll(' ', '\ ')
-				command = `powershell Set-Clipboard -Path '${path}'`;
+				const src = this.#getSource(this.#targets[0]);
+				const response = await requestUrl({ url: src });
+				const blob = new Blob([response.arrayBuffer], { type: response.headers['content-type'] || 'image/png' });
+				await navigator.clipboard.write([new ClipboardItem({[blob.type]: blob})]);
+				new Notice(loc('COPIED_MEDIA'));
 			}
-			if(Platform.isMacOS)
+			catch (error)
 			{
-				command = `pbcopy < "${path}"`;
-			}
-			if(Platform.isLinux)
-			{
-				const result = await fetch(this.#getSource(this.#targets[0]));
-				const blob = await result.blob();
-				command = `xclip -selection clipboard -t ${blob.type} -o > "${path}""`;
-			}
-			// TODO: try to find an android solution? maybe on android we should have a share option instead? oh shit, that actually makes more sense...
-
-			if(command == null)
-			{
+				console.error(error);
 				new Notice(loc('PLATFORM_COPY_NOT_SUPPORTED'));
 			}
-
-			exec(command,
-				(error, stdout, stderr) =>
-				{
-					if(error)
-					{
-						console.error(stderr);
-						new Notice(loc("PLATFORM_EXEC_FAILURE"));
-					}
-					else
-					{
-						new Notice(loc('COPIED_MEDIA'));
-					}
-				});
 		}
 	}
 

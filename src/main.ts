@@ -454,13 +454,8 @@ export default class GalleryTagsPlugin extends Plugin
 		this.accentColorDark = scaleColor(this.accentColor, 0.25);
 		this.accentColorLight = scaleColor(this.accentColor, 1.5);
     
-		let style = document.createElement('style');
-		style.innerHTML = '.icon-checked { color: '+this.accentColor+'; }';
-		document.getElementsByTagName('head')[0].appendChild(style);	
-
-		style = document.createElement('style');
-		style.innerHTML = '.selected-item { border: 5px solid '+this.accentColorLight+'; }';
-		document.getElementsByTagName('head')[0].appendChild(style);	
+		// Colors are now handled via CSS variables in styles.css
+		// using var(--interactive-accent) which Obsidian updates automatically
   }
 
   onunload()

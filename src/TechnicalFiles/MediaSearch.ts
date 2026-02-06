@@ -411,7 +411,7 @@ export class MediaSearch
 					for (let f = 0; f < frontList.length; f++) 
 					{
 						let field:string[] = [];
-						if(frontMatter.hasOwnProperty(frontList[f]))
+						if(Object.prototype.hasOwnProperty.call(frontMatter, frontList[f]))
 						{
 							field = frontMatter[frontList[f]];
 						}
