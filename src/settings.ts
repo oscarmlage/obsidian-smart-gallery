@@ -296,13 +296,13 @@ export class GallerySettingTab extends PluginSettingTab
       .setName(loc('SETTING_HIDDEN_INFO_TITLE'))
       .setTooltip(loc('SETTING_HIDDEN_INFO_DESC'))
       .setDesc(``)
-      .addText(text => text
-        .setPlaceholder(loc('SETTING_HIDDEN_INFO_PLACEHOLDER'))
-        .onChange(async (value) =>
-        {
-          value = value.trim();
-          hiddenInfoInput = value;
-        }))
+		.addText(text => text
+			.setPlaceholder(loc('SETTING_HIDDEN_INFO_PLACEHOLDER'))
+			.onChange((value) =>
+			{
+				value = value.trim();
+				hiddenInfoInput = value;
+			}))
       .addButton(text => text
         .setIcon("plus")
         .setTooltip(loc('SETTING_HIDDEN_INFO_ADD'))
@@ -330,13 +330,13 @@ export class GallerySettingTab extends PluginSettingTab
       .setName(loc('SETTING_AUTO_COMPLETE_TITLE'))
       .setTooltip(loc('SETTING_AUTO_COMPLETE_DESC'))
       .setDesc(``)
-      .addText(text => text
-        .setPlaceholder(loc('SETTING_AUTO_COMPLETE_PLACEHOLDER'))
-        .onChange(async (value) =>
-        {
-          value = value.trim();
-          hiddenInfoInput = value;
-        }))
+		.addText(text => text
+			.setPlaceholder(loc('SETTING_AUTO_COMPLETE_PLACEHOLDER'))
+			.onChange((value) =>
+			{
+				value = value.trim();
+				hiddenInfoInput = value;
+			}))
       .addButton(text => text
         .setIcon("plus")
         .setTooltip(loc('SETTING_AUTO_COMPLETE_ADD'))

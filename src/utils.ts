@@ -93,9 +93,21 @@ export const validString = (original: string, minLength:number = 0): boolean =>
  * @param someSearchQuery text of the query
  * @param app ref to the app
  */
+type GlobalSearchPlugin = {
+	instance?: {
+		openGlobalSearch: (query: string) => void
+	}
+} | null;
+
+type AppWithInternalPlugins = App & {
+	internalPlugins: {
+		getPluginById: (id: string) => GlobalSearchPlugin
+	}
+};
+
 export const getSearch = (someSearchQuery: string, app: App): void => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  (app as any).internalPlugins.getPluginById('global-search').instance.openGlobalSearch(someSearchQuery);
+	const plugin = (app as AppWithInternalPlugins).internalPlugins.getPluginById('global-search');
+	plugin?.instance?.openGlobalSearch(someSearchQuery);
 }
 
 /**
@@ -240,14 +252,14 @@ export const createMetaFile = async (imgPath:string,plugin:GalleryTagsPlugin): P
 
   plugin.embedQueue[filepath] = imgPath;
 
-  try
-  {
-    return await plugin.app.vault.create(filepath, initializeInfo(template, imgPath, imgName));
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  catch(_e)
-  {
-    infoFile = plugin.app.vault.getAbstractFileByPath(filepath);
+	try
+	{
+		return await plugin.app.vault.create(filepath, initializeInfo(template, imgPath, imgName));
+	}
+	catch(error)
+	{
+		console.warn('Failed to create info file', error);
+		infoFile = plugin.app.vault.getAbstractFileByPath(filepath);
     if(infoFile instanceof TFile)
     {
       return infoFile;
@@ -322,17 +334,17 @@ export const addRemoteMeta = async (imgPath: string, infoTFile: TFile, plugin: G
   const targetImage = frontmatter?.targetImage as string | undefined;
   const shouldLink = !(targetImage && targetImage.length > 0)
 
-  if(shouldLink)
-  {
-    void plugin.app.fileManager.processFrontMatter(infoTFile, (fm) =>
-    {
-      if(shouldLink)
-      {
-        (fm as Record<string, unknown>).targetImage = imgPath;
-      }
-    });
-    return true;
-  }
+	if(shouldLink)
+	{
+		await plugin.app.fileManager.processFrontMatter(infoTFile, (fm) =>
+		{
+			if(shouldLink)
+			{
+				(fm as Record<string, unknown>).targetImage = imgPath;
+			}
+		});
+		return true;
+	}
 
   return false;
 }
@@ -644,10 +656,10 @@ const getJpgTags = async (imgTFile: TFile, plugin: GalleryTagsPlugin): Promise<s
  * @param plugin plugin ref
  * @returns list of file paths that match the file name
  */
-export const searchForFile = async (path: string, plugin: GalleryTagsPlugin): Promise<string[]> =>
+export const searchForFile = (path: string, plugin: GalleryTagsPlugin): string[] =>
 {
-  const foundPaths: string[] = []
-  const vaultFiles: TFile[] = plugin.app.vault.getFiles();
+	const foundPaths: string[] = []
+	const vaultFiles: TFile[] = plugin.app.vault.getFiles();
   const fileName: string = path.substring(path.lastIndexOf('/'));
 
   for (const file of vaultFiles)
@@ -658,7 +670,7 @@ export const searchForFile = async (path: string, plugin: GalleryTagsPlugin): Pr
     }
   }
 
-  return foundPaths;
+	return foundPaths;
 }
 
 export const setLazyLoading = (): void =>

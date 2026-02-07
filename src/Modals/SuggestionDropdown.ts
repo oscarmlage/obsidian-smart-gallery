@@ -29,17 +29,15 @@ export class SuggestionDropdown
 		this.#suggestions = this.#self.createDiv({cls: "suggestions-scroll"});
 		
 		this.target.addEventListener("input", () =>{
-			void this.#updateSuggestions(this.target.value).then(() => {
-				void this.#show();
-			});
+			this.#updateSuggestions(this.target.value);
+			this.#show();
 		});
 		
 		this.target.addEventListener('click', () =>{
 			if(this.showOnClick)
 			{
-				void this.#updateSuggestions(this.target.value).then(() => {
-					void this.#show();
-				});
+				this.#updateSuggestions(this.target.value);
+				this.#show();
 			}
 		});
 
@@ -152,7 +150,7 @@ export class SuggestionDropdown
 		}
 	}
 
-	async #updateSuggestions(input: string)
+	#updateSuggestions(input: string)
 	{
 		if(input == this.#input)
 		{
@@ -222,7 +220,7 @@ export class SuggestionDropdown
 		item.addClass("is-selected");
 	}
 
-	async #show()
+	#show()
 	{
 		let top, left;
 		[top, left] = this.getCoords();

@@ -42,7 +42,7 @@ export class FilterTypeMenu extends MenuPopup
 	}
 
 
-	async #submit(result:string)
+	#submit(result:string)
 	{
 		switch(result)
 		{

@@ -76,7 +76,7 @@ export class GalleryInfoView extends ItemView
 		};
 	}
 
-	async setState(
+	setState(
 		state: { filePath: string },
 		result: ViewStateResult
 	): Promise<void> 
@@ -209,11 +209,11 @@ export class GalleryInfoView extends ItemView
     }
   }
 
-  async render(): Promise<void>
-  {
-    this.contentEl.empty();
-    if(this.editing)
-    {
+	async render(): Promise<void>
+	{
+		this.contentEl.empty();
+		if(this.editing)
+		{
       const test = this.contentEl.createEl("textarea", {cls: "gallery-info-panel-edit"} );
       test.value = this.fileContent;
       test.addEventListener('blur', () => {
@@ -229,11 +229,13 @@ export class GalleryInfoView extends ItemView
         })();
       });
     }
-    else
-    {
-      void MarkdownRenderer.render(this.app, this.fileContent, this.contentEl, this.infoFile.path, this);
-    }
-  }
+		else
+		{
+			await MarkdownRenderer.render(this.app, this.fileContent, this.contentEl, this.infoFile.path, this);
+		}
+
+		return Promise.resolve();
+	}
 
   clear(): void
   {

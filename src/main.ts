@@ -1,4 +1,4 @@
-import { Plugin, type WorkspaceLeaf, addIcon, Notice, TFile, TFolder, TAbstractFile, Platform } from 'obsidian'
+import { Plugin, type WorkspaceLeaf, addIcon, Notice, TFile, TFolder, TAbstractFile, Platform, type Vault } from 'obsidian'
 import { scaleColor, type ImageResources, addEmbededTags, getimageLink, getImageInfo, preprocessUri, ToastMessage, addRemoteMeta, isRemoteMedia, getTags, sleep } from './utils'
 import { GallerySettingTab } from './settings'
 import { GalleryBlock } from './Blocks/GalleryBlock'
@@ -451,17 +451,17 @@ export default class GalleryTagsPlugin extends Plugin
     })();
   }
 
-  #refreshColors()
-  {
-		// @ts-ignore - getConfig is an internal API
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-		this.accentColor = this.app.vault.getConfig('accentColor');
+	#refreshColors()
+	{
+		const vaultWithConfig = this.app.vault as Vault & { getConfig?: (key: string) => string | undefined };
+		const accent = vaultWithConfig.getConfig?.('accentColor');
+		this.accentColor = accent ?? this.accentColor ?? '#7f6df2';
 		this.accentColorDark = scaleColor(this.accentColor, 0.25);
 		this.accentColorLight = scaleColor(this.accentColor, 1.5);
 
 		// Colors are now handled via CSS variables in styles.css
 		// using var(--interactive-accent) which Obsidian updates automatically
-  }
+	}
 
   onunload()
   {
@@ -474,10 +474,10 @@ export default class GalleryTagsPlugin extends Plugin
     this.metaResources = {};
   }
 
-  async loadSettings()
-  {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData())
+	async loadSettings()
+	{
+		const storedSettings = await this.loadData() as Partial<GallerySettings> | null;
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, storedSettings ?? {})
     let changed = false;
     for (let i = 0; i < this.settings.namedFilters.length; i++)
     {
@@ -509,10 +509,9 @@ export default class GalleryTagsPlugin extends Plugin
     return new GalleryInfoView(leaf, this)
   };
 
-  showPanel = async function (this: GalleryTagsPlugin)
-  {
-    const workspace = this.app.workspace
-    void workspace.getLeaf(false).setViewState({ type: OB_GALLERY })
-  };
+	showPanel = function (this: GalleryTagsPlugin)
+	{
+		const workspace = this.app.workspace
+		void workspace.getLeaf(false).setViewState({ type: OB_GALLERY })
+	};
 }
-

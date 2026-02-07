@@ -355,7 +355,7 @@ export class MediaGrid
 		}
 	}
 
-	async vidTouch (evt:Event)
+	vidTouch (evt:Event)
 	{
 		if(evt.target instanceof HTMLVideoElement)
 		{

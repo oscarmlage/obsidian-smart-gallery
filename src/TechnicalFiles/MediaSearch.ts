@@ -464,10 +464,9 @@ export class MediaSearch
 					reg.push(new RegExp(`^${this.path}.*${names[i]}.*$`));
 				}
 			}
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			catch (_error)
+			catch (error)
 			{
-				console.warn(loc('BAD_REGEX_WARNING'))
+				console.warn(loc('BAD_REGEX_WARNING'), error)
 			}
 		}
 

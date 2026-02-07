@@ -86,7 +86,7 @@ export class ImageInfoBlock
       const mightFile = plugin.app.vault.getAbstractFileByPath(args.imgPath);
       if (!(mightFile instanceof TFile))
       {
-        const found = await searchForFile(args.imgPath, plugin);
+			const found = searchForFile(args.imgPath, plugin);
 
         if(found.length == 0)
         {

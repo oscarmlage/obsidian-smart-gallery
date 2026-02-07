@@ -336,7 +336,7 @@ export class GalleryInfo
 	}
 
 	// Side panel links don't work normally, so this on click helps with that
-	async #updateLinks()
+	#updateLinks()
 	{
 		const files = this.plugin.app.vault.getFiles();
 		const docLinks = this.doc.querySelectorAll('a.internal-link');

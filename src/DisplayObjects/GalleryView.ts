@@ -179,9 +179,9 @@ export class GalleryView extends ItemView
     await Promise.resolve()
   }
 
-  async onOpen(): Promise<void>
-  {
-    this.mediaSearch.clearFilter();
+	async onOpen(): Promise<void>
+	{
+		this.mediaSearch.clearFilter();
 
     if(validString(this.plugin.platformSettings().defaultFilter))
     {
@@ -203,8 +203,8 @@ export class GalleryView extends ItemView
     // Add listener to change active file
     this.mediaGrid.setupClickEvents();
 
-    void this.loadResults();
-  }
+		await this.loadResults();
+	}
 
   async loadResults()
   {
