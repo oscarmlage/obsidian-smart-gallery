@@ -46,12 +46,12 @@ export default
 	SETTING_META_TEMPLATE_TITLE: "Meta file template override",
 	SETTING_META_TEMPLATE_DESC1: "Location of template file to use for generating image meta files. If blank will use default.",
 	SETTING_META_TEMPLATE_DESC2: "These keys will be replaced with the apropriate info for the file:",
-	SETTING_META_TEMPLATE_DESC3: "<% IMG LINK %> : Clickable link to the image with its name as the text",
-	SETTING_META_TEMPLATE_DESC4: "<% IMG EMBED %> : Embeded view of the image",
-	SETTING_META_TEMPLATE_DESC5: "<% IMG INFO %> : Info block for the image",
-	SETTING_META_TEMPLATE_DESC6: "<% IMG URI %> : The formatted URI for the image that can be used to generate a link to it",
-	SETTING_META_TEMPLATE_DESC7: "<% IMG PATH %> : Path to the image(including file name)",
-	SETTING_META_TEMPLATE_DESC8: "<% IMG NAME %> : File name for the image",
+	SETTING_META_TEMPLATE_DESC3: "<% IMG LINK %> : clickable link to the image with its name as the text",
+	SETTING_META_TEMPLATE_DESC4: "<% IMG EMBED %> : embedded view of the image",
+	SETTING_META_TEMPLATE_DESC5: "<% IMG INFO %> : info block for the image",
+	SETTING_META_TEMPLATE_DESC6: "<% IMG URI %> : the formatted URI for the image that can be used to generate a link to it",
+	SETTING_META_TEMPLATE_DESC7: "<% IMG PATH %> : path to the image(including file name)",
+	SETTING_META_TEMPLATE_DESC8: "<% IMG NAME %> : file name for the image",
 	SETTING_QUICK_IMPORT_TITLE: "Skip keyword import for existing keys",
 	SETTING_ALTERNATIVE_TAGS_TITLE: "Alternative tags",
 	SETTING_ALTERNATIVE_TAGS_DESC: "Name of frontmatter field to use for tags instead of tags. Leave blank to used tags.",
@@ -88,7 +88,7 @@ export default
 	FILTER_PATH_PROMPT: "Path",
 	FILTER_NAME_TOOLTIP: "File name contains",
 	FILTER_NAME_PROMPT: "File name",
-	FILTER_TAGS_TOOLTIP: `Partial tags seperated by spaces. Minus in front of a tag excludes it. eg "drawing -sketch fant" to include drawing and fantasy tags, but exclude sketches.`,
+	FILTER_TAGS_TOOLTIP: `Partial tags separated by spaces. A minus in front of a tag excludes it. e.g. "drawing -sketch fant" to include drawing and fantasy tags, but exclude sketches.`,
 	FILTER_TAGS_PROMPT: "Tags to search",
 	FILTER_MATCH_CASE_TOOLTIP: "Should tags match exact case",
 	FILTER_EXCLUSIVE_TOOLTIP: "Should search include only results that match all tags?",
@@ -109,7 +109,7 @@ export default
 	-tag Strictly exclude images that have this tag
 	^tag match case on this tag`,
 	CANCEL_LOAD_NOTICE: "Canceled indexing, tag search may be limited",
-	BAD_REGEX_WARNING: "Gallery search - BAD REGEX! Regex set to '.*' as default!!",
+	BAD_REGEX_WARNING: "Gallery search - bad regex. Regex set to '.*' as default.",
 
 	// Sort Menu
 	SORT_HEADER: "Change sorting",
@@ -183,7 +183,7 @@ export default
 
 	// Info Block
 	IMAGE_INFO_TITLE: "Image info",
-	IMAGE_PATH_FAILED_FIND_WARNING: "### File path not found. Were you looking for one of these options?\n",
+	IMAGE_PATH_FAILED_FIND_WARNING: "File path not found. Were you looking for one of these options?\n",
 	IMAGE_INFO_FIELD_NAME: "Name",
 	IMAGE_INFO_FIELD_PATH: "Path",
 	IMAGE_INFO_FIELD_EXTENSION: "Extension",
@@ -196,9 +196,9 @@ export default
 	IMAGE_INFO_FIELD_INFOLINKS: "Info links",
 	IMAGE_INFO_FIELD_RELATED: "Related files",
 	IMAGE_INFO_FIELD_PALETTE: "Color palette",
-	IMAGE_INFO_PAGING_START: "|Start|",
-	IMAGE_INFO_PAGING_PREV: "<<Prev",
-	IMAGE_INFO_PAGING_NEXT: "Next>>",
+	IMAGE_INFO_PAGING_START: "Start",
+	IMAGE_INFO_PAGING_PREV: "Previous",
+	IMAGE_INFO_PAGING_NEXT: "Next",
 
 	// Warning instructions
 	TOAST_ADDITIONAL_CONTEXT: "(click=dismiss, right-click={0})",
