@@ -47,11 +47,11 @@ export default class GalleryTagsPlugin extends Plugin
     this.registerView(OB_GALLERY, this.galleryViewCreator.bind(this))
     this.registerView(OB_GALLERY_INFO, this.galleryInfoCreator.bind(this))
 
-    // Add Main Gallery Ribbon
-    this.addRibbonIcon('fa-Images', 'Gallery', async (e) =>
-    {
-      await this.showPanel()
-    });
+		// Add Main Gallery Ribbon
+		this.addRibbonIcon('fa-Images', 'Gallery', () =>
+		{
+			this.showPanel()
+		});
 
     this.addSettingTab(new GallerySettingTab(this.app, this))
     void this.saveSettings();
