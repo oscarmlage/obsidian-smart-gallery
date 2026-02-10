@@ -19,10 +19,10 @@ export default
 	SETTING_DATA_REFRESH_DESC: "If the plugin is having issues finding certain files, you can try this.",
 	SETTING_DATA_REFRESH_BUTTON: "Rebuild",
 	SETTING_MAIN_PATH_TITLE: "Main gallery default path",
-	SETTING_MAIN_PATH_DESC: `The path from which to show images when the main gallery is opened. 
-	Setting it to '/' will show all images in the vault. 
-	Can be used to avoid the loading all images and affecting on open performance 
-	(especially if vault has a huge amount of high quality images). 
+	SETTING_MAIN_PATH_DESC: `The path from which to show images when the main gallery is opened.
+	Setting it to '/' will show all images in the vault.
+	Can be used to avoid the loading all images and affecting on open performance
+	(especially if vault has a huge amount of high quality images).
 	Setting it to an invalid path to have no images shown when gallery is opened.`,
 	SETTING_FILTER_TITLE: "Default search bar",
 	SETTING_FILTER_DESC: "Which search bar to show when opening the gallery view.",
@@ -38,7 +38,7 @@ export default
 	SETTING_MAX_HEIGHT_DESC: "Max image height in `pixels` for images to display in collumns.",
 	SETTING_METADATA_HEADER: "Image metadata",
 	SETTING_META_FOLDER_TITLE: "Gallery info folder",
-	SETTING_META_FOLDER_DESC1: "Specify an existing vault folder for the gallery plugin to store image information or notes as markdown files.",
+	SETTING_META_FOLDER_DESC1: "Specify an existing vault folder for the gallery plugin to store image information or notes as Markdown files.",
 	SETTING_META_FOLDER_DESC2: "E.g. `Resources/Gallery`.",
 	SETTING_META_FOLDER_DESC3: "On first activation the default is unspecified. Thus the info functionality of the main gallery is diabled.",
 	SETTING_META_FOLDER_DESC4: "Folder must already exist (plugin will not create it).",
@@ -46,12 +46,12 @@ export default
 	SETTING_META_TEMPLATE_TITLE: "Meta file template override",
 	SETTING_META_TEMPLATE_DESC1: "Location of template file to use for generating image meta files. If blank will use default.",
 	SETTING_META_TEMPLATE_DESC2: "These keys will be replaced with the apropriate info for the file:",
-	SETTING_META_TEMPLATE_DESC3: "Use <% IMG LINK %> for a clickable link to the image with its name as the text",
-	SETTING_META_TEMPLATE_DESC4: "Use <% IMG EMBED %> for an embedded view of the image",
-	SETTING_META_TEMPLATE_DESC5: "Use <% IMG INFO %> for the info block for the image",
-	SETTING_META_TEMPLATE_DESC6: "Use <% IMG URI %> for the formatted URI for the image that can be used to generate a link to it",
-	SETTING_META_TEMPLATE_DESC7: "Use <% IMG PATH %> for the path to the image (including file name)",
-	SETTING_META_TEMPLATE_DESC8: "Use <% IMG NAME %> for the file name for the image",
+	SETTING_META_TEMPLATE_DESC3: "Use <% img link %> for a clickable link to the image with its name as the text",
+	SETTING_META_TEMPLATE_DESC4: "Use <% img embed %> for an embedded view of the image",
+	SETTING_META_TEMPLATE_DESC5: "Use <% img info %> for the info block for the image",
+	SETTING_META_TEMPLATE_DESC6: "Use <% img uri %> for the formatted URI for the image that can be used to generate a link to it",
+	SETTING_META_TEMPLATE_DESC7: "Use <% img path %> for the path to the image (including file name)",
+	SETTING_META_TEMPLATE_DESC8: "Use <% img name %> for the file name for the image",
 	SETTING_QUICK_IMPORT_TITLE: "Skip keyword import for existing keys",
 	SETTING_ALTERNATIVE_TAGS_TITLE: "Alternative tags",
 	SETTING_ALTERNATIVE_TAGS_DESC: "Name of frontmatter field to use for tags instead of tags. Leave blank to used tags.",
@@ -88,7 +88,7 @@ export default
 	FILTER_PATH_PROMPT: "Path",
 	FILTER_NAME_TOOLTIP: "File name contains",
 	FILTER_NAME_PROMPT: "File name",
-	FILTER_TAGS_TOOLTIP: `Partial tags separated by spaces; a minus before a tag excludes it. e.g., "drawing -sketch fant" includes drawing and fantasy tags but excludes sketches.`,
+	FILTER_TAGS_TOOLTIP: `Partial tags separated by spaces; a minus before a tag excludes it. For example, "drawing -sketch fant" includes drawing and fantasy tags but excludes sketches.`,
 	FILTER_TAGS_PROMPT: "Tags to search",
 	FILTER_MATCH_CASE_TOOLTIP: "Should tags match exact case",
 	FILTER_EXCLUSIVE_TOOLTIP: "Should search include only results that match all tags?",
@@ -102,7 +102,7 @@ export default
 	regex: custom search regex (strict)
 	tags: search for tags
 	<front matter field>: search a custom frontmatter field
-	
+
 	Tag and frontmatter fields can also use these modifiers in front of a tag
 	---
 	!tag Strictly require this tag to be on the image
@@ -119,7 +119,7 @@ export default
 	SORT_OPTION_4: "Date modified",
 	SORT_OPTION_5: "File size",
 	SORT_OPTION_6: "Reverse",
-	
+
 	// Filter Menu
 	FILTER_HEADER: "Filter actions",
 	FILTER_OPTION_1: "Copy current filter",
