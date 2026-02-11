@@ -49,7 +49,7 @@ export default
 	SETTING_META_TEMPLATE_DESC3: "Use <% img link %> for a clickable link to the image with its name as the text",
 	SETTING_META_TEMPLATE_DESC4: "Use <% img embed %> for an embedded view of the image",
 	SETTING_META_TEMPLATE_DESC5: "Use <% img info %> for the info block for the image",
-	SETTING_META_TEMPLATE_DESC6: "Use <% img uri %> for the formatted URI for the image that can be used to generate a link to it",
+	SETTING_META_TEMPLATE_DESC6: "Use <% img uri %> for the formatted uri for the image that can be used to generate a link to it",
 	SETTING_META_TEMPLATE_DESC7: "Use <% img path %> for the path to the image (including file name)",
 	SETTING_META_TEMPLATE_DESC8: "Use <% img name %> for the file name for the image",
 	SETTING_QUICK_IMPORT_TITLE: "Skip keyword import for existing keys",
