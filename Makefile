@@ -14,9 +14,9 @@ docker-build: ## Build the plugin using Docker
 	docker rm $(CONTAINER_NAME)
 	@echo "Build complete: main.js created"
 
-docker-lint: ## Run svelte-check linting using Docker
+docker-lint: ## Run svelte-check and ESLint using Docker
 	docker build -t $(IMAGE_NAME) .
-	docker run --rm $(IMAGE_NAME) npm run lint
+	docker run --rm $(IMAGE_NAME) npm run lint:all
 
 docker-lint-eslint: ## Run ESLint (Obsidian rules) using Docker
 	docker build -t $(IMAGE_NAME) .
